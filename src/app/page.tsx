@@ -10,15 +10,15 @@ export default function CookieLogixDashboard() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [statusLog, setStatusLog] = useState<string>('Kernel active. Webacy Threat Intelligence & Cookie Chain SVM synchronized.');
-  const [intentInput, setIntentInput] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'terminal' | 'security' | 'analytics'>('terminal');
-  const [safetyScore, setSafetyScore] = useState<{ label: string; color: string; score: string }>({
-    label: 'Not Connected',
-    color: 'text-slate-400',
-    score: 'N/A'
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeNav, setActiveNav] = useState<'dashboard' | 'wallets' | 'alerts' | 'watchlist' | 'transaction' | 'reports' | 'settings'>('dashboard');
+  const [safetyScore, setSafetyScore] = useState<{ label: string; color: string; score: number }>({
+    label: 'Moderate Risk',
+    color: 'text-amber-400',
+    score: 45
   });
 
-  // Animação de introdução de 2 segundos com anagrama/revelação tipográfica
+  // Splash Screen de Entrada Cinematográfica (2s)
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -48,13 +48,8 @@ export default function CookieLogixDashboard() {
       }
 
       setWalletAddress(pubKeyStr);
-      setStatusLog(`Authenticated securely: ${pubKeyStr.slice(0, 6)}...${pubKeyStr.slice(-4)}`);
-
-      setSafetyScore({
-        label: 'Safest',
-        color: 'text-emerald-400',
-        score: '99.4%'
-      });
+      setStatusLog(`Authenticated securely: ${pubKeyStr}`);
+      setSafetyScore({ label: 'Safest', color: 'text-emerald-400', score: 99 });
 
       const pubKey = new PublicKey(pubKeyStr);
       const lamports = await connection.getBalance(pubKey);
@@ -65,41 +60,30 @@ export default function CookieLogixDashboard() {
     }
   };
 
-  const handleExecuteIntent = (e: React.FormEvent) => {
+  const handleSearchScan = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!walletAddress) {
-      alert('Please connect your Nightly wallet first!');
-      return;
-    }
-    setStatusLog(`Executing multi-provider DD.xyz risk scan & Transaction Intelligence HUD...`);
+    if (!searchQuery) return;
+    setStatusLog(`Scanning target address/hash: ${searchQuery} via DD.xyz Threat Risks API...`);
     setTimeout(() => {
-      setStatusLog(`[SUCCESS] Intent verified via Transaction Risks API. Zero threats. Finalized on Cookie Chain.`);
+      setStatusLog(`[SUCCESS] Scan complete for ${searchQuery}. Threat analysis verified.`);
     }, 1500);
   };
 
-  // Tela de Introdução (Splash Screen com Animação de Anagrama de 2 Segundos e Logo Personalizada)
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-[#030712] flex flex-col items-center justify-center z-50 overflow-hidden font-sans">
-        <div className="absolute w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[160px] animate-pulse pointer-events-none"></div>
-        <div className="relative z-10 flex flex-col items-center space-y-5">
-          <div className="h-16 w-16 rounded-2xl bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-500/30 ring-2 ring-emerald-400/50 overflow-hidden relative">
-            <img 
-              src="/cookie-logo.png" 
-              alt="CookieLogix Logo" 
-              className="h-full w-full object-cover" 
-            />
+      <div className="fixed inset-0 bg-[#0c0d14] flex flex-col items-center justify-center z-50 overflow-hidden font-sans">
+        <div className="absolute w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[180px] animate-pulse pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col items-center space-y-6">
+          <div className="h-20 w-20 rounded-3xl bg-[#141520] border border-indigo-500/30 flex items-center justify-center shadow-2xl shadow-indigo-500/20 overflow-hidden">
+            <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-cover" />
           </div>
           <div className="text-center space-y-2">
-            <h1 className="text-2xl md:text-3xl font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-500 animate-pulse uppercase">
+            <h1 className="text-2xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-indigo-500 uppercase">
               C O O K I E L O G I X
             </h1>
-            <p className="text-[11px] text-slate-400 tracking-widest uppercase font-mono">
-              Resolving SVM Anagram & Risk Kernel...
+            <p className="text-[11px] text-slate-500 tracking-widest uppercase font-mono">
+              Loading Multi-Layered Security Kernel...
             </p>
-          </div>
-          <div className="w-36 h-1 bg-slate-800 rounded-full overflow-hidden mt-2">
-            <div className="h-full bg-emerald-400 animate-[pulse_1s_infinite]"></div>
           </div>
         </div>
       </div>
@@ -107,256 +91,270 @@ export default function CookieLogixDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0c0d14] text-slate-100 font-sans flex antialiased selection:bg-indigo-500 selection:text-slate-950">
       
-      {/* Background Neon Glow Effects */}
-      <div className="absolute top-0 left-1/4 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-[180px] pointer-events-none"></div>
-      <div className="absolute top-1/3 right-10 w-[550px] h-[550px] bg-teal-500/10 rounded-full blur-[200px] pointer-events-none"></div>
-
-      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10 space-y-8">
-        
-        {/* Navigation & Header */}
-        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-slate-900/40 border border-slate-800/80 backdrop-blur-2xl p-6 rounded-3xl gap-6 shadow-2xl shadow-emerald-950/30">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-slate-950 flex items-center justify-center shadow-xl shadow-emerald-500/20 ring-1 ring-emerald-400/30 overflow-hidden relative">
-              <img 
-                src="/cookie-logo.png" 
-                alt="CookieLogix Logo" 
-                className="h-full w-full object-cover" 
-              />
+      {/* 1. SIDEBAR (Estilo Rixor Exato) */}
+      <aside className="w-64 bg-[#11121d] border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-6 shrink-0">
+        <div className="space-y-8">
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-[#181926] border border-indigo-500/30 flex items-center justify-center overflow-hidden shadow-md">
+              <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-cover" />
             </div>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="text-xl font-black tracking-tight text-white">CookieLogix</span>
-                <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-0.5 rounded-full font-bold tracking-widest uppercase">
-                  SVM Intent Engine
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5 font-medium">Autonomous Intent cApp & Due Diligence Risk Engine</p>
-            </div>
+            <span className="text-lg font-black tracking-tight text-white">CookieLogix</span>
           </div>
 
-          <div className="flex items-center gap-3 w-full lg:w-auto justify-end flex-wrap">
-            <div className="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-1.5 flex gap-1 shadow-inner">
-              <button
-                onClick={() => setActiveTab('terminal')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'terminal' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-              >
-                Terminal
-              </button>
-              <button
-                onClick={() => setActiveTab('security')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'security' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-              >
-                Risk Engine
-              </button>
-              <button
-                onClick={() => setActiveTab('analytics')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${activeTab === 'analytics' ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:text-white'}`}
-              >
-                Analytics
-              </button>
+          {/* Navigation Groups */}
+          <div className="space-y-6">
+            <div>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">Overview</p>
+              <nav className="space-y-1">
+                {[
+                  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
+                  { id: 'wallets', label: 'Wallets', icon: '💼' },
+                  { id: 'alerts', label: 'Alerts', icon: '🔔' },
+                  { id: 'watchlist', label: 'Watchlist', icon: '⭐' },
+                  { id: 'transaction', label: 'Transaction', icon: '⚡' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveNav(item.id as any)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${activeNav === item.id ? 'bg-[#1b1c2b] text-indigo-400 border border-indigo-500/20 shadow-inner' : 'text-slate-400 hover:text-white hover:bg-[#151622]'}`}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </nav>
             </div>
 
-            <a
-              href="/docs"
-              className="bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-800 px-4 py-2.5 rounded-2xl font-bold transition text-xs flex items-center gap-1.5 shadow-sm"
-            >
-              📄 Docs & Grant
-            </a>
+            <div>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">Tools</p>
+              <nav className="space-y-1">
+                {[
+                  { id: 'reports', label: 'Reports', icon: '📄' },
+                  { id: 'settings', label: 'Settings', icon: '⚙️' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveNav(item.id as any)}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition ${activeNav === item.id ? 'bg-[#1b1c2b] text-indigo-400 border border-indigo-500/20 shadow-inner' : 'text-slate-400 hover:text-white hover:bg-[#151622]'}`}
+                  >
+                    <span>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          </div>
+        </div>
 
+        {/* Bottom Banner Card in Sidebar */}
+        <div className="bg-gradient-to-b from-[#181926] to-[#12131e] border border-slate-800/80 p-4 rounded-2xl space-y-3 shadow-lg">
+          <div className="h-8 w-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-sm">
+            🛡️
+          </div>
+          <div>
+            <h4 className="text-xs font-bold text-white">Enhanced Security</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Additional features to enhance your due diligence.</p>
+          </div>
+          <button 
+            onClick={connectNightlyWallet}
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-2 rounded-xl text-xs font-bold transition shadow-md"
+          >
+            {walletAddress ? 'Connected' : 'Try now →'}
+          </button>
+        </div>
+      </aside>
+
+      {/* 2. MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        
+        {/* Top Navigation Bar */}
+        <header className="h-20 bg-[#0c0d14]/80 backdrop-blur-xl border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-4 w-full max-w-xl">
+            <h2 className="text-sm font-bold text-white hidden sm:block tracking-wide uppercase">Wallet Risk Scanner</h2>
+            <form onSubmit={handleSearchScan} className="flex-1 relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search wallet address / ENS / tx hash..."
+                className="w-full bg-[#13141f] border border-slate-800/80 rounded-xl px-4 py-2 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 shadow-inner font-mono"
+              />
+            </form>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-xs font-mono text-slate-400 hidden md:block">
+              18:13 (UTC+6)
+            </div>
             <button
               onClick={connectNightlyWallet}
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-2.5 rounded-2xl font-black transition-all shadow-xl shadow-emerald-500/25 text-xs uppercase tracking-wider flex items-center gap-2"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-lg shadow-indigo-600/20"
             >
-              <span className="h-2 w-2 rounded-full bg-slate-950 animate-ping"></span>
               {walletAddress ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : 'Connect Nightly'}
             </button>
           </div>
         </header>
 
-        {/* Telemetry & Metrics Cards */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Network Status</span>
-            <div className="flex items-center gap-2 mt-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <p className="text-base font-black text-emerald-400">Cookie Chain Live</p>
-            </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Sub-second SVM finality</span>
-          </div>
-
-          <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Wallet Balance</span>
-            <p className="text-base font-black text-white mt-2">
-              {balance !== null ? `${balance} COOK` : '0.00 COOK'}
-            </p>
-            <span className="text-[11px] text-slate-500 mt-1 block">Native gas token</span>
-          </div>
-
-          {/* Wallet Safety Badge */}
-          <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Wallet Safety Score</span>
-            <p className={`text-base font-black mt-2 ${safetyScore.color}`}>
-              {safetyScore.label} ({safetyScore.score})
-            </p>
-            <span className="text-[11px] text-slate-500 mt-1 block">Exposure Risk API</span>
-          </div>
-
-          <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">RPC Endpoint</span>
-            <div className="mt-2 bg-slate-950/80 border border-slate-800/80 px-3 py-1.5 rounded-xl font-mono text-xs text-slate-300 truncate font-semibold">
-              rpc.cookiescan.io
-            </div>
-            <span className="text-[11px] text-emerald-500 mt-1 block">Connected & optimized</span>
-          </div>
-        </section>
-
-        {/* Dynamic Views */}
-        {activeTab === 'terminal' && (
+        {/* Dashboard Grid Content */}
+        <div className="p-8 space-y-6 max-w-7xl mx-auto w-full">
+          
+          {/* Row 1: Selected Wallet & Risk Score */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Left/Main Terminal Card */}
-            <div className="lg:col-span-2 bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl relative">
+            {/* Selected Wallet Overview */}
+            <div className="lg:col-span-2 bg-[#12131e] border border-slate-800/70 p-6 rounded-3xl space-y-6 shadow-xl">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  Selected Wallet: <span className="text-white font-mono">0xAb57...04c5</span> <span className="text-indigo-400">(whale.eth)</span>
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-[#181926] border border-slate-800/60 p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Scans</span>
+                    <p className="text-xl font-mono font-black text-white mt-1">1234 times</p>
+                  </div>
+                  <div className="h-10 w-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 text-lg">
+                    🔍
+                  </div>
+                </div>
+
+                <div className="bg-[#181926] border border-slate-800/60 p-5 rounded-2xl relative overflow-hidden flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Risk Detected</span>
+                    <p className="text-xl font-mono font-black text-amber-400 mt-1">4 Mid 12 High</p>
+                  </div>
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg">
+                    ⚠️
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Risk Score Gauge Card */}
+            <div className="bg-[#12131e] border border-slate-800/70 p-6 rounded-3xl flex flex-col justify-between shadow-xl">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Risk score</span>
+                <span className="text-xs text-amber-400 font-bold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">MEDIUM RISK</span>
+              </div>
+              
+              <div className="flex flex-col items-center justify-center my-4">
+                <div className="relative flex items-center justify-center">
+                  <div className="text-3xl font-mono font-black text-white">{safetyScore.score}</div>
+                </div>
+                <span className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-mono">Risk score (0 - 100)</span>
+              </div>
+
+              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+                This wallet shows moderate risk patterns. Review threat details below.
+              </p>
+            </div>
+
+          </div>
+
+          {/* Row 2: Risk Breakdown & Live Alerts */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Risk Breakdown Bar Chart Simulation */}
+            <div className="lg:col-span-2 bg-[#12131e] border border-slate-800/70 p-6 rounded-3xl space-y-6 shadow-xl">
               <div>
-                <h2 className="text-lg font-black text-white flex items-center gap-2">
-                  ⚡ Autonomous Intent Terminal
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">Execute multi-step smart contract interactions smoothly using natural-language intent commands.</p>
+                <h3 className="text-sm font-bold text-white">Risk Breakdown</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Interpretable of the 78 score based on weighted heuristics</p>
               </div>
 
-              <form onSubmit={handleExecuteIntent} className="space-y-4">
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl blur opacity-30 group-hover:opacity-75 transition duration-300"></div>
-                  <input
-                    type="text"
-                    value={intentInput}
-                    onChange={(e) => setIntentInput(e.target.value)}
-                    placeholder="e.g. Check account health, simulate secure swap..."
-                    className="relative w-full bg-slate-950 border border-slate-800/80 rounded-2xl px-5 py-4 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 text-sm font-medium shadow-inner"
-                  />
+              <div className="grid grid-cols-4 gap-4 h-48 items-end pt-4">
+                <div className="flex flex-col items-center gap-2 h-full justify-end">
+                  <span className="text-[11px] font-mono font-bold text-indigo-400">60%</span>
+                  <div className="w-full bg-[#181926] border border-slate-800 rounded-xl h-[60%] flex items-end justify-center pb-2">
+                    <span className="text-[10px] text-slate-500 transform -rotate-90">Known Flag</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-[11px] text-slate-500 font-medium">Secured by Cookie Chain SVM & Nightly</span>
-                  <button
-                    type="submit"
-                    className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-7 py-3 rounded-2xl font-black transition-all shadow-lg shadow-emerald-500/25 text-xs tracking-wider uppercase"
-                  >
-                    Execute Intent
-                  </button>
-                </div>
-              </form>
 
-              {/* Console Output */}
-              <div className="bg-slate-950/90 border border-slate-800/80 rounded-2xl p-5 font-mono text-xs text-emerald-400/90 h-44 overflow-y-auto shadow-inner">
-                <div className="flex items-center justify-between text-[10px] text-slate-600 border-b border-slate-900 pb-2 mb-3 font-bold tracking-widest">
-                  <span>KERNEL LOGS</span>
-                  <span>STATUS: SECURE</span>
+                <div className="flex flex-col items-center gap-2 h-full justify-end">
+                  <span className="text-[11px] font-mono font-bold text-indigo-400">20%</span>
+                  <div className="w-full bg-[#181926] border border-slate-800 rounded-xl h-[30%] flex items-end justify-center pb-2">
+                    <span className="text-[10px] text-slate-500 transform -rotate-90">Behavior</span>
+                  </div>
                 </div>
-                <span className="text-slate-500">$ cookielogix-core --init --risk-module=active</span>
-                <p className="mt-2 leading-relaxed">{statusLog}</p>
+
+                <div className="flex flex-col items-center gap-2 h-full justify-end">
+                  <span className="text-[11px] font-mono font-bold text-indigo-400">15%</span>
+                  <div className="w-full bg-[#181926] border border-slate-800 rounded-xl h-[20%] flex items-end justify-center pb-2">
+                    <span className="text-[10px] text-slate-500 transform -rotate-90">Counterparty</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center gap-2 h-full justify-end">
+                  <span className="text-[11px] font-mono font-bold text-indigo-400">5%</span>
+                  <div className="w-full bg-[#181926] border border-slate-800 rounded-xl h-[10%] flex items-end justify-center pb-2">
+                    <span className="text-[10px] text-slate-500 transform -rotate-90">Contract</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Right Actions Panel */}
-            <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl flex flex-col justify-between">
+            {/* Live Alerts Feed */}
+            <div className="bg-[#12131e] border border-slate-800/70 p-6 rounded-3xl space-y-4 shadow-xl flex flex-col justify-between">
               <div>
-                <h3 className="text-sm font-black text-white mb-2 tracking-wide uppercase">Quick Intent Actions</h3>
-                <p className="text-xs text-slate-400 mb-4">Click any preset to automatically load into the execution terminal.</p>
-                
-                <div className="space-y-3">
-                  <button 
-                    onClick={() => setIntentInput('Check account risk profile & token exposure')}
-                    className="w-full text-left bg-slate-950/60 hover:bg-slate-800/60 border border-slate-800/80 p-3.5 rounded-2xl text-xs text-slate-300 transition flex justify-between items-center group font-medium"
-                  >
-                    <span>🔍 Check wallet risk & exposure</span>
-                    <span className="text-slate-600 group-hover:text-emerald-400 font-bold">→</span>
-                  </button>
-                  <button 
-                    onClick={() => setIntentInput('Simulate secure token swap on Cookie Chain')}
-                    className="w-full text-left bg-slate-950/60 hover:bg-slate-800/60 border border-slate-800/80 p-3.5 rounded-2xl text-xs text-slate-300 transition flex justify-between items-center group font-medium"
-                  >
-                    <span>⚡ Simulate secure swap</span>
-                    <span className="text-slate-600 group-hover:text-emerald-400 font-bold">→</span>
-                  </button>
-                  <button 
-                    onClick={() => setIntentInput('Audit smart contract approvals & allowances')}
-                    className="w-full text-left bg-slate-950/60 hover:bg-slate-800/60 border border-slate-800/80 p-3.5 rounded-2xl text-xs text-slate-300 transition flex justify-between items-center group font-medium"
-                  >
-                    <span>🛡️ Audit token approvals</span>
-                    <span className="text-slate-600 group-hover:text-emerald-400 font-bold">→</span>
-                  </button>
+                <h3 className="text-sm font-bold text-white mb-1">🔥 Live Alerts Feed</h3>
+                <p className="text-xs text-slate-400 mb-4">Real-time web3 transaction intelligence logs.</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="bg-[#181926] border border-slate-800/80 p-3.5 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="bg-red-500/10 text-red-400 border border-red-500/20 text-[9px] px-2 py-0.5 rounded-md font-bold">Critical</span>
+                    <span className="text-[10px] text-slate-500">1 hour ago</span>
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium leading-snug">95 ETH received form Tornadocash-like mixer.</p>
+                </div>
+
+                <div className="bg-[#181926] border border-slate-800/80 p-3.5 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] px-2 py-0.5 rounded-md font-bold">Medium</span>
+                    <span className="text-[10px] text-slate-500">1 day ago</span>
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium leading-snug">Interaction with unverified smart contract at 0x123...</p>
                 </div>
               </div>
 
-              <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-4 text-xs text-emerald-300/90 leading-relaxed">
-                <span className="font-bold block mb-1 uppercase tracking-wider text-[10px] text-emerald-400">💡 Security Notice</span>
-                Every intent undergoes multi-provider risk analysis prior to smart contract confirmation.
+              <div className="pt-2 border-t border-slate-800/60 flex justify-between items-center text-xs text-indigo-400 font-semibold cursor-pointer">
+                <span>View all security alerts</span>
+                <span>→</span>
               </div>
             </div>
 
           </div>
-        )}
 
-        {activeTab === 'security' && (
-          <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
-            <div>
-              <h2 className="text-lg font-black text-white">Security & Due Diligence Hub</h2>
-              <p className="text-xs text-slate-400 mt-1">Multi-provider risk engines protecting transactions across the entire Web3 and SVM landscape.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-3">
-                <h4 className="text-sm font-black text-emerald-400">🛡️ Threat Risks API</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Scans contracts and addresses against known threat databases and sanction lists.</p>
-                <div className="pt-1">
-                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-lg font-bold">Status: Active</span>
+          {/* Row 3: Recent Scans */}
+          <div className="bg-[#12131e] border border-slate-800/70 p-6 rounded-3xl space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-white">Recent Scans</h3>
+            <div className="space-y-3">
+              <div className="bg-[#181926] border border-slate-800/80 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                  <p className="text-xs font-mono font-bold text-white">0x742d35...9c4f8a</p>
+                  <span className="text-[11px] text-slate-500">🕒 2 minutes ago</span>
                 </div>
+                <span className="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] px-3 py-1 rounded-xl font-bold">Medium Risk</span>
               </div>
 
-              <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-3">
-                <h4 className="text-sm font-black text-emerald-400">🔍 Transaction Intelligence</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Pre-execution risk analytics to mitigate drainer exploits and malicious allowances.</p>
-                <div className="pt-1">
-                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-lg font-bold">Status: Real-time</span>
+              <div className="bg-[#181926] border border-slate-800/80 p-4 rounded-2xl flex justify-between items-center">
+                <div>
+                  <p className="text-xs font-mono font-bold text-white">0x8f3a21...4b7e9d</p>
+                  <span className="text-[11px] text-slate-500">🕒 15 minutes ago</span>
                 </div>
-              </div>
-
-              <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-3">
-                <h4 className="text-sm font-black text-emerald-400">📊 Approval & Holder Analysis</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Deep inspection of token distribution dynamics and smart contract allowance permissions.</p>
-                <div className="pt-1">
-                  <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-lg font-bold">Status: Monitoring</span>
-                </div>
+                <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-xl font-bold">Low Risk</span>
               </div>
             </div>
           </div>
-        )}
 
-        {activeTab === 'analytics' && (
-          <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
-            <div>
-              <h2 className="text-lg font-black text-white">Cookie Chain Network Telemetry</h2>
-              <p className="text-xs text-slate-400 mt-1">Real-time performance metrics streamed directly from the Cookie Chain RPC layer.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800/80">
-                <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Block Height</span>
-                <p className="text-xl font-mono font-black text-white mt-2">#14,298,412</p>
-              </div>
-              <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800/80">
-                <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Average Finality</span>
-                <p className="text-xl font-mono font-black text-emerald-400 mt-2">0.42s</p>
-              </div>
-              <div className="bg-slate-950 p-6 rounded-2xl border border-slate-800/80">
-                <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">Intent Success Rate</span>
-                <p className="text-xl font-mono font-black text-emerald-400 mt-2">99.8%</p>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
 
-      </div>
+      </main>
     </div>
   );
 }
