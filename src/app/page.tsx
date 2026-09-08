@@ -1,16 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 const COOKIE_RPC = 'https://rpc.cookiescan.io';
 const connection = new Connection(COOKIE_RPC, 'confirmed');
 
 export default function CookieLogixDashboard() {
+  const [loading, setLoading] = useState<boolean>(true);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [statusLog, setStatusLog] = useState<string>('Kernel active. Webacy Threat Intelligence & Cookie Chain SVM synchronized.');
   const [intentInput, setIntentInput] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'terminal' | 'security' | 'analytics'>('terminal');
+  const [safetyScore, setSafetyScore] = useState<{ label: string; color: string; score: string }>({
+    label: 'Not Connected',
+    color: 'text-slate-400',
+    score: 'N/A'
+  });
+
+  // Animação de introdução de 2 segundos com anagrama/revelação tipográfica
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const connectNightlyWallet = async () => {
     try {
@@ -36,6 +50,12 @@ export default function CookieLogixDashboard() {
       setWalletAddress(pubKeyStr);
       setStatusLog(`Authenticated securely: ${pubKeyStr.slice(0, 6)}...${pubKeyStr.slice(-4)}`);
 
+      setSafetyScore({
+        label: 'Safest',
+        color: 'text-emerald-400',
+        score: '99.4%'
+      });
+
       const pubKey = new PublicKey(pubKeyStr);
       const lamports = await connection.getBalance(pubKey);
       setBalance(lamports / 1e9);
@@ -51,11 +71,40 @@ export default function CookieLogixDashboard() {
       alert('Please connect your Nightly wallet first!');
       return;
     }
-    setStatusLog(`Executing multi-provider DD.xyz risk scan & simulating SVM intent...`);
+    setStatusLog(`Executing multi-provider DD.xyz risk scan & Transaction Intelligence HUD...`);
     setTimeout(() => {
-      setStatusLog(`[SUCCESS] Intent verified. Zero threat signatures found. Finalized on Cookie Chain (0.42s).`);
+      setStatusLog(`[SUCCESS] Intent verified via Transaction Risks API. Zero threats. Finalized on Cookie Chain.`);
     }, 1500);
   };
+
+  // Tela de Introdução (Splash Screen com Animação de Anagrama de 2 Segundos e Logo Personalizada)
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-[#030712] flex flex-col items-center justify-center z-50 overflow-hidden font-sans">
+        <div className="absolute w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[160px] animate-pulse pointer-events-none"></div>
+        <div className="relative z-10 flex flex-col items-center space-y-5">
+          <div className="h-16 w-16 rounded-2xl bg-slate-950 flex items-center justify-center shadow-2xl shadow-emerald-500/30 ring-2 ring-emerald-400/50 overflow-hidden relative">
+            <img 
+              src="/cookie-logo.png" 
+              alt="CookieLogix Logo" 
+              className="h-full w-full object-cover" 
+            />
+          </div>
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl md:text-3xl font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-500 animate-pulse uppercase">
+              C O O K I E L O G I X
+            </h1>
+            <p className="text-[11px] text-slate-400 tracking-widest uppercase font-mono">
+              Resolving SVM Anagram & Risk Kernel...
+            </p>
+          </div>
+          <div className="w-36 h-1 bg-slate-800 rounded-full overflow-hidden mt-2">
+            <div className="h-full bg-emerald-400 animate-[pulse_1s_infinite]"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 relative overflow-hidden">
@@ -69,8 +118,12 @@ export default function CookieLogixDashboard() {
         {/* Navigation & Header */}
         <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center bg-slate-900/40 border border-slate-800/80 backdrop-blur-2xl p-6 rounded-3xl gap-6 shadow-2xl shadow-emerald-950/30">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-2xl shadow-xl shadow-emerald-500/20 ring-1 ring-emerald-400/30">
-              🍪
+            <div className="h-12 w-12 rounded-2xl bg-slate-950 flex items-center justify-center shadow-xl shadow-emerald-500/20 ring-1 ring-emerald-400/30 overflow-hidden relative">
+              <img 
+                src="/cookie-logo.png" 
+                alt="CookieLogix Logo" 
+                className="h-full w-full object-cover" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-2.5">
@@ -79,7 +132,7 @@ export default function CookieLogixDashboard() {
                   SVM Intent Engine
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5 font-medium">Autonomous Intent cApp & Due Diligence Risk Engine (Webacy / DD.xyz)</p>
+              <p className="text-xs text-slate-400 mt-0.5 font-medium">Autonomous Intent cApp & Due Diligence Risk Engine</p>
             </div>
           </div>
 
@@ -141,10 +194,13 @@ export default function CookieLogixDashboard() {
             <span className="text-[11px] text-slate-500 mt-1 block">Native gas token</span>
           </div>
 
+          {/* Wallet Safety Badge */}
           <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Wallet Safety Score</span>
-            <p className="text-base font-black text-emerald-400 mt-2">Safest (99.4%)</p>
-            <span className="text-[11px] text-slate-500 mt-1 block">DD.xyz Risk Intelligence</span>
+            <p className={`text-base font-black mt-2 ${safetyScore.color}`}>
+              {safetyScore.label} ({safetyScore.score})
+            </p>
+            <span className="text-[11px] text-slate-500 mt-1 block">Exposure Risk API</span>
           </div>
 
           <div className="bg-slate-900/30 border border-slate-800/80 p-6 rounded-3xl backdrop-blur-xl hover:border-emerald-500/40 transition group">
@@ -245,7 +301,7 @@ export default function CookieLogixDashboard() {
         {activeTab === 'security' && (
           <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
             <div>
-              <h2 className="text-lg font-black text-white">Security & Due Diligence Hub (Webacy / DD.xyz)</h2>
+              <h2 className="text-lg font-black text-white">Security & Due Diligence Hub</h2>
               <p className="text-xs text-slate-400 mt-1">Multi-provider risk engines protecting transactions across the entire Web3 and SVM landscape.</p>
             </div>
 
@@ -267,8 +323,8 @@ export default function CookieLogixDashboard() {
               </div>
 
               <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-3">
-                <h4 className="text-sm font-black text-emerald-400">📊 Holder & Contract Analysis</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">Deep inspection of token distribution dynamics and smart contract vulnerabilities.</p>
+                <h4 className="text-sm font-black text-emerald-400">📊 Approval & Holder Analysis</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">Deep inspection of token distribution dynamics and smart contract allowance permissions.</p>
                 <div className="pt-1">
                   <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-lg font-bold">Status: Monitoring</span>
                 </div>

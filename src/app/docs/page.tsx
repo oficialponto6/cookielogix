@@ -17,7 +17,7 @@ export default function GrantDocumentation() {
             ← Back to CookieLogix dApp
           </Link>
           <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-            Startup Accelerator Grant Proposal (Webacy / DD.xyz)
+            Startup Accelerator Grant Proposal (Webacy / DD.xyz)[cite: 1]
           </span>
         </div>
 
@@ -27,7 +27,7 @@ export default function GrantDocumentation() {
             CookieLogix 🍪: Autonomous Intent cApp & Due Diligence Risk Engine
           </h1>
           <p className="text-sm md:text-base text-slate-300 leading-relaxed font-medium">
-            Built for the Cookie Chain (SVM) ecosystem, CookieLogix bridges high-speed intent execution with enterprise-grade security intelligence, protecting users against modern web3 vectors like drainers, malicious approvals, and compromised contracts.
+            Built for the Cookie Chain (SVM) ecosystem, CookieLogix bridges high-speed intent execution with enterprise-grade security intelligence, protecting users against modern web3 vectors like drainers, malicious approvals, and compromised contracts[cite: 1].
           </p>
         </div>
 
@@ -46,7 +46,7 @@ export default function GrantDocumentation() {
             </div>
             <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-2">
               <h3 className="text-sm font-black text-emerald-400">2. Risk Intelligence Layer</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores.</p>
+              <p className="text-xs text-slate-400 leading-relaxed">Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores[cite: 1].</p>
             </div>
           </div>
         </div>
@@ -54,25 +54,25 @@ export default function GrantDocumentation() {
         {/* API Integration Details */}
         <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
           <h2 className="text-xl font-black text-white flex items-center gap-2">
-            👩🏻‍💻 Multi-Provider Risk APIs (Webacy / DD.xyz)
+            👩🏻‍💻 Multi-Provider Risk APIs (Webacy / DD.xyz)[cite: 1]
           </h2>
           <div className="space-y-4">
             <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Threat Risks API</h4>
+              <h4 className="text-sm font-black text-emerald-400">Threat Risks API[cite: 1]</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Discovers historical risk profiles of EOAs, contracts, and tokens to prevent interaction with flagged or sanctioned entities.
+                Discovers historical risk profiles of EOAs, contracts, and tokens to prevent interaction with flagged or sanctioned entities[cite: 1].
               </p>
             </div>
             <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Approval Risks API</h4>
+              <h4 className="text-sm font-black text-emerald-400">Approval Risks API[cite: 1]</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Inspects token allowances and flags dangerous infinite approvals to mitigate asset drain attacks.
+                Inspects token allowances and flags dangerous infinite approvals to mitigate asset drain attacks[cite: 1].
               </p>
             </div>
             <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Transaction Intelligence</h4>
+              <h4 className="text-sm font-black text-emerald-400">Transaction Intelligence & Exposure Risk[cite: 1]</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Evaluates transactional health and smart contract safety prior to wallet signature confirmation.
+                Evaluates transactional health, smart contract safety, and wallet safety score infographics prior to signature confirmation[cite: 1].
               </p>
             </div>
           </div>
