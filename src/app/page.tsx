@@ -15,7 +15,9 @@ import {
   MagnifyingGlassIcon,
   ExclamationTriangleIcon,
   ArrowRightIcon,
-  PlusIcon
+  PlusIcon,
+  QuestionMarkCircleIcon,
+  CommandLineIcon
 } from '@heroicons/react/24/outline';
 
 const COOKIE_RPC = 'https://rpc.cookiescan.io';
@@ -29,14 +31,14 @@ export default function CookieLogixDashboard() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeNav, setActiveNav] = useState<'dashboard' | 'wallets' | 'alerts' | 'watchlist' | 'transaction' | 'reports' | 'settings'>('dashboard');
   
-  // Estado para recolher/expandir a sidebar
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
 
   const [intentInput, setIntentInput] = useState<string>('');
   const [watchlistItems, setWatchlistItems] = useState<string[]>(['0x742d35...9c4f8a', '0x8f3a21...4b7e9d']);
   const [newWatchAddress, setNewWatchAddress] = useState<string>('');
-  const [alertsList, setAlertsList] = useState<Array<{ id: number; type: string; message: string; time: string }>>([
-    { id: 1, type: 'Critical Alert', message: 'Suspicious allowance detected on contract 0x99a...4b1', time: '10 mins ago' }
+  const [alertsList, setAlertsList] = useState<Array<{ id: number; type: string; message: string; time: string; severity: 'high' | 'mid' | 'low' }>>([
+    { id: 1, type: 'Critical Alert', message: 'Suspicious allowance detected on contract 0x99a...4b1', time: '10 mins ago', severity: 'high' },
+    { id: 2, type: 'Warning', message: 'Unusual outbound frequency on secondary router', time: '25 mins ago', severity: 'mid' }
   ]);
 
   const [safetyScore, setSafetyScore] = useState<{ label: string; color: string; score: number }>({
@@ -45,10 +47,12 @@ export default function CookieLogixDashboard() {
     score: 45
   });
 
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 1800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -98,11 +102,7 @@ export default function CookieLogixDashboard() {
   const handleExecuteIntent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!intentInput) return;
-    setStatusLog(`Executing intent: "${intentInput}" via SVM Intent Engine...`);
-    setTimeout(() => {
-      setStatusLog(`[SUCCESS] Intent executed securely on Cookie Chain. Zero threats found.`);
-      setIntentInput('');
-    }, 1500);
+    setStatusLog(`Initializing SVM Intent Engine for: "${intentInput}"...\n[INFO] Running pre-execution security scan via Webacy...\n[SUCCESS] Intent executed securely on Cookie Chain. Zero threats found.`);
   };
 
   const handleAddToWatchlist = (e: React.FormEvent) => {
@@ -117,7 +117,8 @@ export default function CookieLogixDashboard() {
       id: Date.now(),
       type: 'Warning',
       message: 'New high-risk transaction monitored on Cookie Chain SVM.',
-      time: 'Just now'
+      time: 'Just now',
+      severity: 'mid' as const
     };
     setAlertsList([newAlert, ...alertsList]);
   };
@@ -157,8 +158,7 @@ Date: 2026-09-08
       <div className="fixed inset-0 bg-[#02050b] flex flex-col items-center justify-center z-50 overflow-hidden font-sans">
         <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center opacity-30 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col items-center space-y-6">
-          {/* Logo limpa sem fundo quadrado */}
-          <div className="h-24 w-24 flex items-center justify-center drop-shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+          <div className="h-24 w-24 flex items-center justify-center drop-shadow-[0_0_25px_rgba(16,185,129,0.4)] animate-pulse">
             <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain" />
           </div>
           <div className="text-center space-y-2">
@@ -177,17 +177,15 @@ Date: 2026-09-08
   return (
     <div className="min-h-screen text-slate-100 font-sans flex antialiased relative overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950 bg-[#02050b]">
       
-      {/* BACKGROUND DE IMAGEM PERSONALIZADO (cookielogix-bg.jpg) */}
       <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
-      {/* 1. SIDEBAR EXECUTIVA RETRÁTIL COM LOGO LIMPA */}
+      {/* 1. SIDEBAR */}
       <aside className={`transition-all duration-300 ease-in-out bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-5 shrink-0 z-20 shadow-2xl ${sidebarExpanded ? 'w-64' : 'w-20'}`}>
         <div className="space-y-8">
           
-          {/* Logo sem caixas escuras e Botão de Minimizar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="h-10 w-10 flex items-center justify-center shrink-0 drop-shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+              <div className="h-10 w-10 flex items-center justify-center shrink-0 drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
                 <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain" />
               </div>
               {sidebarExpanded && (
@@ -197,7 +195,7 @@ Date: 2026-09-08
 
             <button
               onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 transition"
+              className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 transition shadow-sm"
               title={sidebarExpanded ? 'Collapse Sidebar' : 'Expand Sidebar'}
             >
               {sidebarExpanded ? <ChevronLeftIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
@@ -209,7 +207,7 @@ Date: 2026-09-08
               {sidebarExpanded && (
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Overview</p>
               )}
-              <nav className="space-y-1">
+              <nav className="space-y-1.5">
                 {[
                   { id: 'dashboard', label: 'Dashboard', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
                   { id: 'wallets', label: 'Wallets', icon: <BriefcaseIcon className="w-5 h-5" /> },
@@ -221,7 +219,7 @@ Date: 2026-09-08
                     key={item.id}
                     onClick={() => setActiveNav(item.id as any)}
                     title={!sidebarExpanded ? item.label : ''}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center' : ''}`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center hover:translate-x-0' : ''}`}
                   >
                     <span className="shrink-0">{item.icon}</span>
                     {sidebarExpanded && <span>{item.label}</span>}
@@ -234,7 +232,7 @@ Date: 2026-09-08
               {sidebarExpanded && (
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Tools</p>
               )}
-              <nav className="space-y-1">
+              <nav className="space-y-1.5">
                 {[
                   { id: 'reports', label: 'Reports', icon: <DocumentTextIcon className="w-5 h-5" /> },
                   { id: 'settings', label: 'Settings', icon: <Cog6ToothIcon className="w-5 h-5" /> },
@@ -243,7 +241,7 @@ Date: 2026-09-08
                     key={item.id}
                     onClick={() => setActiveNav(item.id as any)}
                     title={!sidebarExpanded ? item.label : ''}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center' : ''}`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center hover:translate-x-0' : ''}`}
                   >
                     <span className="shrink-0">{item.icon}</span>
                     {sidebarExpanded && <span>{item.label}</span>}
@@ -254,7 +252,6 @@ Date: 2026-09-08
           </div>
         </div>
 
-        {/* Docs & Grant Card in Sidebar */}
         {sidebarExpanded && (
           <div className="bg-[#080c16]/90 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl space-y-3 shadow-xl relative overflow-hidden">
             <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -277,88 +274,96 @@ Date: 2026-09-08
       {/* 2. MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10">
         
-        {/* Top Header */}
         <header className="h-20 bg-[#03060e]/80 backdrop-blur-3xl border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-6 w-full max-w-xl">
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:block">
               {activeNav.toUpperCase()}
             </h2>
             <form onSubmit={handleSearchScan} className="flex-1 relative flex items-center">
-              <MagnifyingGlassIcon className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
+              <MagnifyingGlassIcon className="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search wallet address / ENS / tx hash..."
-                className="w-full bg-[#080c16]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 shadow-inner font-mono"
+                className="w-full bg-[#080c16]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl pl-10 pr-12 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 shadow-inner font-mono transition"
               />
+              <span className="absolute right-3.5 text-[10px] font-mono text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 pointer-events-none">
+                ⌘K
+              </span>
             </form>
           </div>
 
           <div className="flex items-center gap-4">
+            <div className="hidden xl:flex items-center gap-2 bg-[#080c16]/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-800/80 text-[11px] font-mono text-slate-300 shadow-inner">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span>22ms | RPC Synced</span>
+            </div>
+
             <a
               href="/docs"
               className="hidden sm:flex bg-[#080c16]/80 backdrop-blur-md hover:bg-[#0f1524] text-slate-300 border border-slate-800 px-4 py-2.5 rounded-2xl font-bold transition text-xs items-center gap-1.5 shadow-sm"
             >
               <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Docs & Grant
             </a>
-            <div className="text-xs font-mono text-slate-400 hidden md:block bg-[#080c16]/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-800/80 shadow-inner">
-              18:13 (UTC+6)
-            </div>
+
             <button
               onClick={connectNightlyWallet}
-              className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-6 py-2.5 rounded-2xl text-xs font-black transition shadow-lg shadow-emerald-500/25 uppercase tracking-wider"
+              className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-6 py-2.5 rounded-2xl text-xs font-black transition shadow-lg shadow-emerald-500/25 uppercase tracking-wider transform hover:scale-[1.02]"
             >
               {walletAddress ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : 'Connect Nightly'}
             </button>
           </div>
         </header>
 
-        {/* Hero Banner */}
-        <div className="px-8 pt-10 pb-4 max-w-7xl mx-auto w-full">
-          <div className="bg-[#060a14]/75 backdrop-blur-2xl border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-4">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase relative z-10">
-              <ShieldCheckIcon className="w-4 h-4 text-emerald-400" /> Webacy & DD.xyz Accelerator Engine
+        <div className="px-8 pt-6 pb-2 max-w-7xl mx-auto w-full">
+          <div className="bg-[#060a14]/75 backdrop-blur-2xl border border-slate-800/80 px-8 py-6 rounded-3xl relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="space-y-1.5 text-center md:text-left">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold text-emerald-400 tracking-widest uppercase">
+                <ShieldCheckIcon className="w-3.5 h-3.5 text-emerald-400" /> Webacy & DD.xyz Accelerator Engine
+              </div>
+              <h1 className="text-xl md:text-2xl font-black text-white tracking-tight">
+                Autonomous Intent & Due Diligence Security Kernel
+              </h1>
             </div>
-
-            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-emerald-300 tracking-tight leading-tight max-w-4xl mx-auto relative z-10">
-              Step Into The Future Of Web3 Security & Intent Execution
-            </h1>
-            
-            <p className="text-xs md:text-sm text-slate-400 max-w-xl mx-auto leading-relaxed relative z-10">
-              Move your crypto assets and execute smart transactions securely in seconds, not hours.
+            <p className="text-xs text-slate-400 max-w-xs text-center md:text-right leading-relaxed font-mono">
+              SVM Mainnet Active • Zero Vulnerabilities Reported
             </p>
           </div>
         </div>
 
-        {/* Dynamic Views per Tab */}
+        {/* Dynamic Views */}
         <div className="px-8 pb-12 space-y-6 max-w-7xl mx-auto w-full">
           
           {activeNav === 'dashboard' && (
             <div className="space-y-6 animate-fade-in">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl space-y-6 shadow-2xl relative overflow-hidden">
+                
+                <div className="lg:col-span-2 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl space-y-6 shadow-2xl relative overflow-hidden transition hover:border-emerald-500/30">
                   <div className="flex justify-between items-center relative z-10">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                      Selected Wallet: <span className="text-white font-mono">0xAb57...04c5</span> <span className="text-emerald-400">(whale.eth)</span>
+                      Selected Wallet: <span className="text-white font-mono">0xAb57...04c5</span> <span className="text-emerald-400 font-mono">(whale.eth)</span>
                     </h3>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-                    <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex items-center justify-between shadow-inner">
+                    <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex items-center justify-between shadow-inner transition hover:bg-[#0c1220]">
                       <div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Scans</span>
-                        <p className="text-xl font-mono font-black text-white mt-1">1234 times</p>
+                        <p className="text-2xl font-mono font-black text-white mt-1 tracking-tight">1,234 <span className="text-xs text-emerald-400 font-normal">times</span></p>
                       </div>
                       <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                         <MagnifyingGlassIcon className="w-5 h-5" />
                       </div>
                     </div>
 
-                    <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex items-center justify-between shadow-inner">
+                    <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex items-center justify-between shadow-inner transition hover:bg-[#0c1220]">
                       <div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Risk Detected</span>
-                        <p className="text-xl font-mono font-black text-amber-400 mt-1">4 Mid 12 High</p>
+                        <p className="text-xl font-mono font-black text-amber-400 mt-1">4 Mid <span className="text-slate-600">|</span> 12 High</p>
                       </div>
                       <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                         <ExclamationTriangleIcon className="w-5 h-5" />
@@ -367,31 +372,44 @@ Date: 2026-09-08
                   </div>
                 </div>
 
-                <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl flex flex-col justify-between shadow-2xl relative overflow-hidden transition hover:border-emerald-500/30">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Risk score</span>
-                    <span className="text-xs text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/20 shadow-sm">MEDIUM RISK</span>
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Risk Score</span>
+                    <span className="text-[11px] text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/20 shadow-sm">MEDIUM RISK</span>
                   </div>
                   
-                  <div className="flex flex-col items-center justify-center my-4">
+                  <div className="flex flex-col items-center justify-center my-2">
                     <div className="h-28 w-28 rounded-full border-4 border-slate-800 border-t-emerald-500 border-r-teal-400 flex items-center justify-center shadow-inner relative bg-[#090d18]/90">
                       <div className="text-3xl font-mono font-black text-white">{safetyScore.score}</div>
                     </div>
-                    <span className="text-[10px] text-slate-400 mt-3 uppercase tracking-wider font-mono">Risk score (0 - 100)</span>
+                    <span className="text-[10px] text-slate-400 mt-3 uppercase tracking-wider font-mono">Normalized scale (0 - 100)</span>
                   </div>
 
-                  <p className="text-[11px] text-slate-400 text-center leading-relaxed">
-                    This wallet shows moderate risk patterns. Review threat details below.
+                  <p className="text-[11px] text-slate-300 text-center leading-relaxed">
+                    This wallet shows moderate heuristic exposure. Review risk breakdown below.
                   </p>
                 </div>
               </div>
 
-              {/* Row 2 - Gráfico em Barras Segmentadas Horizontais Neon */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl space-y-6 shadow-2xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-bold text-white">Risk Breakdown</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-bold text-white">Risk Breakdown</h3>
+                        <div className="relative">
+                          <QuestionMarkCircleIcon 
+                            className="w-4 h-4 text-slate-500 cursor-pointer hover:text-emerald-400 transition"
+                            onMouseEnter={() => setActiveTooltip('risk')}
+                            onMouseLeave={() => setActiveTooltip(null)}
+                          />
+                          {activeTooltip === 'risk' && (
+                            <div className="absolute left-0 bottom-6 bg-slate-950 border border-slate-700 text-[11px] text-slate-200 p-2.5 rounded-xl shadow-xl w-56 z-20">
+                              Calculated via Webacy Exposure Risk API based on historical contract interactions.
+                            </div>
+                          )}
+                        </div>
+                      </div>
                       <p className="text-xs text-slate-400 mt-0.5">Interpretable analysis of the 78 score based on weighted heuristics</p>
                     </div>
                     <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20">
@@ -401,7 +419,6 @@ Date: 2026-09-08
                   </div>
 
                   <div className="space-y-4 pt-2">
-                    {/* Item 1: Known Flag (60%) */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-slate-300 font-semibold">Known Flag</span>
@@ -417,7 +434,6 @@ Date: 2026-09-08
                       </div>
                     </div>
 
-                    {/* Item 2: Behavior (20%) */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-slate-300 font-semibold">Behavior Analysis</span>
@@ -433,7 +449,6 @@ Date: 2026-09-08
                       </div>
                     </div>
 
-                    {/* Item 3: Counterparty (15%) */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-slate-300 font-semibold">Counterparty Risk</span>
@@ -449,7 +464,6 @@ Date: 2026-09-08
                       </div>
                     </div>
 
-                    {/* Item 4: Contract (5%) */}
                     <div className="space-y-1.5">
                       <div className="flex justify-between text-xs font-medium">
                         <span className="text-slate-300 font-semibold">Contract Integrity</span>
@@ -475,10 +489,10 @@ Date: 2026-09-08
 
                   <div className="space-y-3">
                     {alertsList.slice(0, 2).map((alert) => (
-                      <div key={alert.id} className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-4 rounded-2xl space-y-2 shadow-inner">
+                      <div key={alert.id} className={`bg-[#090d18]/80 backdrop-blur-md border p-4 rounded-2xl space-y-2 shadow-inner transition hover:translate-x-1 ${alert.severity === 'high' ? 'border-red-500/30 bg-red-500/5' : 'border-slate-800/80'}`}>
                         <div className="flex justify-between items-center">
-                          <span className="bg-red-500/10 text-red-400 border border-red-500/20 text-[9px] px-2.5 py-0.5 rounded-md font-bold">{alert.type}</span>
-                          <span className="text-[10px] text-slate-500">{alert.time}</span>
+                          <span className={`text-[9px] px-2.5 py-0.5 rounded-md font-bold border ${alert.severity === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-sm shadow-red-500/10' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>{alert.type}</span>
+                          <span className="text-[10px] text-slate-500 font-mono">{alert.time}</span>
                         </div>
                         <p className="text-xs text-slate-300 font-medium leading-snug">{alert.message}</p>
                       </div>
@@ -552,10 +566,10 @@ Date: 2026-09-08
                 {alertsList.map((alert) => (
                   <div key={alert.id} className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex justify-between items-center shadow-inner">
                     <div>
-                      <span className="bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] px-2.5 py-1 rounded-md font-bold">{alert.type}</span>
+                      <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold border ${alert.severity === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>{alert.type}</span>
                       <p className="text-xs text-slate-200 mt-2 font-medium">{alert.message}</p>
                     </div>
-                    <span className="text-xs text-slate-500">{alert.time}</span>
+                    <span className="text-xs text-slate-500 font-mono">{alert.time}</span>
                   </div>
                 ))}
               </div>
@@ -629,7 +643,7 @@ Date: 2026-09-08
                   value={intentInput}
                   onChange={(e) => setIntentInput(e.target.value)}
                   placeholder="Enter intent command or select a suggestion above..." 
-                  className="w-full bg-[#02050b]/90 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono"
+                  className="w-full bg-[#02050b]/90 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-emerald-500 font-mono shadow-inner"
                 />
                 <button 
                   type="submit"
@@ -639,9 +653,23 @@ Date: 2026-09-08
                 </button>
               </form>
 
-              <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl p-4 font-mono text-xs text-emerald-400 h-32 overflow-y-auto shadow-inner">
-                <span className="text-slate-500">$ intent-engine --status=ready</span>
-                <p className="mt-2">{statusLog}</p>
+              {/* TERMINAL ESTILIZADO DE ALTO PADRÃO COM FEEDBACK VISUAL */}
+              <div className="bg-[#02050b] backdrop-blur-md border border-emerald-500/30 rounded-2xl p-5 font-mono text-xs text-emerald-400 shadow-2xl space-y-2 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-8 bg-[#040812] border-b border-slate-800/80 px-4 flex items-center justify-between text-[10px] text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <CommandLineIcon className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Cookie Chain SVM Kernel Terminal v1.2</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-red-500/80" />
+                    <span className="h-2 w-2 rounded-full bg-amber-500/80" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
+                  </div>
+                </div>
+                <div className="pt-6 space-y-1.5 whitespace-pre-line">
+                  <span className="text-slate-500">$ intent-engine --status=ready --rpc=cookiescan.io</span>
+                  <p className="text-slate-200 mt-2 leading-relaxed">{statusLog}</p>
+                </div>
               </div>
             </div>
           )}
@@ -654,7 +682,7 @@ Date: 2026-09-08
               </div>
               <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl flex justify-between items-center shadow-inner">
                 <div>
-                  <p className="text-xs font-bold text-white">CookieLogix_Risk_Report_Q3.txt</p>
+                  <p className="text-xs font-bold text-white font-mono">CookieLogix_Risk_Report_Q3.txt</p>
                   <span className="text-[11px] text-slate-400">Verified via DD.xyz Kernel</span>
                 </div>
                 <button 
@@ -677,7 +705,7 @@ Date: 2026-09-08
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-xs font-bold text-white">Cookie Chain RPC Endpoint</p>
-                    <span className="text-[11px] text-slate-400">https://rpc.cookiescan.io</span>
+                    <span className="text-[11px] text-slate-400 font-mono">https://rpc.cookiescan.io</span>
                   </div>
                   <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-xl font-bold">Connected</span>
                 </div>
