@@ -1,89 +1,127 @@
 'use client';
-import Link from 'next/link';
+import { useState } from 'react';
 
-export default function GrantDocumentation() {
+export default function DocsPage() {
+  const [copied, setCopied] = useState(false);
+
+  const grantMarkdownContent = `# CookieLogix: Autonomous Intent cApp & Due Diligence Risk Engine
+
+## 1. Executive Summary
+CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed intent execution with enterprise-grade security intelligence. It protects users against modern web3 attack vectors such as drainers, malicious allowances, and compromised smart contracts.
+
+## 2. Core Architecture & Integration
+* **Intent-Driven Engine**: Translates user natural-language intent into secure SVM transactions with sub-second finality.
+* **Risk Intelligence Layer**: Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores in real time.
+* **RPC Synchronization**: Direct communication via rpc.cookiescan.io for optimized transaction telemetry.
+
+## 3. Startup Accelerator Grant Alignment (Webacy / DD.xyz)
+* **Pre-Execution Protection**: Mitigates malicious transactions before broadcast.
+* **Autonomous Security**: Fully integrated risk scanner with live alerts and telemetry metrics.
+`;
+
+  const copyMarkdown = () => {
+    navigator.clipboard.writeText(grantMarkdownContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 relative overflow-hidden">
+    <div className="min-h-screen bg-[#030712] text-slate-100 font-sans relative overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950">
       
-      {/* Background Neon Glow Effects */}
-      <div className="absolute top-0 left-1/4 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-[180px] pointer-events-none"></div>
-      <div className="absolute top-1/3 right-10 w-[550px] h-[550px] bg-teal-500/10 rounded-full blur-[200px] pointer-events-none"></div>
+      {/* Background Atmospheric Glow (100% Esmeralda e Teal) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-b from-emerald-600/20 via-teal-600/5 to-transparent rounded-full blur-[160px] pointer-events-none z-0"></div>
 
-      <div className="max-w-4xl mx-auto px-6 py-12 relative z-10 space-y-10">
+      <div className="max-w-5xl mx-auto px-6 py-12 relative z-10 space-y-10">
         
-        {/* Top Navigation Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900/40 border border-slate-800/80 backdrop-blur-2xl p-5 rounded-3xl gap-4 shadow-2xl">
-          <Link href="/" className="text-xs font-bold text-emerald-400 hover:text-emerald-300 transition flex items-center gap-2">
+        {/* Top Navigation & Action Bar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#070b14]/90 backdrop-blur-2xl border border-slate-800/80 p-6 rounded-3xl gap-4 shadow-2xl">
+          <a
+            href="/"
+            className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl"
+          >
             ← Back to CookieLogix dApp
-          </Link>
-          <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-            Startup Accelerator Grant Proposal (Webacy / DD.xyz)[cite: 1]
-          </span>
+          </a>
+
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3.5 py-1.5 rounded-xl font-bold tracking-widest uppercase">
+              Startup Accelerator Grant Proposal (Webacy / DD.xyz)
+            </span>
+            <button
+              onClick={copyMarkdown}
+              className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20"
+            >
+              {copied ? '✓ Copied Markdown' : '📋 Copy Grant Proposal'}
+            </button>
+          </div>
         </div>
 
-        {/* Title & Core Overview */}
-        <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-4 shadow-2xl">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">
-            CookieLogix 🍪: Autonomous Intent cApp & Due Diligence Risk Engine
+        {/* Hero Section da Documentação */}
+        <div className="bg-gradient-to-b from-[#080d18] to-[#040812] border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-4">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[250px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase">
+            🍪 Official Technical Documentation
+          </div>
+
+          <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-emerald-300 tracking-tight leading-tight max-w-3xl mx-auto">
+            CookieLogix: Autonomous Intent cApp & Due Diligence Risk Engine
           </h1>
-          <p className="text-sm md:text-base text-slate-300 leading-relaxed font-medium">
-            Built for the Cookie Chain (SVM) ecosystem, CookieLogix bridges high-speed intent execution with enterprise-grade security intelligence, protecting users against modern web3 vectors like drainers, malicious approvals, and compromised contracts[cite: 1].
+          
+          <p className="text-xs md:text-sm text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Built for the Cookie Chain (SVM) ecosystem, CookieLogix bridges high-speed intent execution with enterprise-grade security intelligence.
           </p>
         </div>
 
-        {/* Architecture Section */}
-        <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
-          <h2 className="text-xl font-black text-white flex items-center gap-2">
-            ⚙️ Core Architecture & Integration
-          </h2>
-          <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-            The platform combines direct high-throughput RPC communication (<code className="text-emerald-400 font-mono">https://rpc.cookiescan.io</code>) with multi-provider risk analysis layers. Every intent processed via the SVM terminal undergoes rigorous pre-execution scanning.
+        {/* Section 2: Core Architecture */}
+        <div className="bg-[#070b14]/90 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
+            <span className="text-xl">⚙️</span>
+            <h2 className="text-lg font-black text-white uppercase tracking-wider">Core Architecture & Integration</h2>
+          </div>
+          
+          <p className="text-xs text-slate-400 leading-relaxed">
+            The platform combines direct high-throughput RPC communication (<code className="text-emerald-400 font-mono bg-[#0b0f19] px-2 py-0.5 rounded border border-slate-800">https://rpc.cookiescan.io</code>) with multi-provider risk analysis layers. Every intent processed via the SVM terminal undergoes rigorous pre-execution scanning.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-2">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+            <div className="bg-[#0b0f19] border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
               <h3 className="text-sm font-black text-emerald-400">1. Intent-Driven Engine</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Translates user intent into secure SVM transactions with sub-second finality.</p>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Translates user intent into secure SVM transactions with sub-second finality.
+              </p>
             </div>
-            <div className="bg-slate-950 border border-slate-800/80 p-6 rounded-2xl space-y-2">
+
+            <div className="bg-[#0b0f19] border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
               <h3 className="text-sm font-black text-emerald-400">2. Risk Intelligence Layer</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores[cite: 1].</p>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* API Integration Details */}
-        <div className="bg-slate-900/30 border border-slate-800/80 p-8 rounded-3xl backdrop-blur-2xl space-y-6 shadow-2xl">
-          <h2 className="text-xl font-black text-white flex items-center gap-2">
-            👩🏻‍💻 Multi-Provider Risk APIs (Webacy / DD.xyz)[cite: 1]
-          </h2>
+        {/* Section 3: Grant Alignment */}
+        <div className="bg-[#070b14]/90 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
+            <span className="text-xl">🚀</span>
+            <h2 className="text-lg font-black text-white uppercase tracking-wider">Startup Accelerator Grant Alignment (Webacy / DD.xyz)</h2>
+          </div>
+
           <div className="space-y-4">
-            <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Threat Risks API[cite: 1]</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Discovers historical risk profiles of EOAs, contracts, and tokens to prevent interaction with flagged or sanctioned entities[cite: 1].
+            <div className="bg-[#0b0f19] border border-slate-800/80 p-5 rounded-2xl space-y-2">
+              <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wide">Pre-Execution Protection</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Mitigates malicious transactions before broadcast through integrated Threat Risks and Exposure Risk APIs.
               </p>
             </div>
-            <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Approval Risks API[cite: 1]</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Inspects token allowances and flags dangerous infinite approvals to mitigate asset drain attacks[cite: 1].
-              </p>
-            </div>
-            <div className="bg-slate-950 border border-slate-800/80 p-5 rounded-2xl space-y-1">
-              <h4 className="text-sm font-black text-emerald-400">Transaction Intelligence & Exposure Risk[cite: 1]</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Evaluates transactional health, smart contract safety, and wallet safety score infographics prior to signature confirmation[cite: 1].
+
+            <div className="bg-[#0b0f19] border border-slate-800/80 p-5 rounded-2xl space-y-2">
+              <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wide">Autonomous Security</h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Fully functional risk scanner with live alerts feed, telemetry metrics, and multi-layered audit dashboards.
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Footer Submission Details */}
-        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-          <span className="font-mono">Repository: github.com/oficialponto6/cookielogix</span>
-          <Link href="https://cookielogix.vercel.app" className="text-emerald-400 hover:underline font-bold">
-            Live Deployment: cookielogix.vercel.app →
-          </Link>
         </div>
 
       </div>
