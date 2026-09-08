@@ -37,27 +37,31 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
     { id: 'settings', label: 'SETTINGS', icon: <Cog6ToothIcon className="w-5 h-5" />, path: '/settings' },
   ];
 
-  // Função auxiliar para verificar se a rota atual é a do botão
+  // Função auxiliar para verificar se a rota atual corresponde ao item
   const isActive = (path: string) => pathname?.startsWith(path);
 
   return (
     <aside className={`transition-all duration-300 ease-in-out bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-5 shrink-0 z-30 shadow-2xl relative ${expanded ? 'w-64' : 'w-20'}`}>
       <div className="space-y-8">
         
-        {/* Topo: Logo e Botão */}
+        {/* Topo: Logo e Nome Clicáveis direcionando para o Dashboard */}
         <div className={`flex ${expanded ? 'items-center justify-between' : 'flex-col items-center gap-4 w-full'}`}>
-          <div className={`flex items-center gap-3 overflow-hidden ${!expanded ? 'justify-center w-full translate-x-2' : ''}`}>
-            <div className="h-10 w-10 flex items-center justify-center shrink-0 bg-transparent shadow-none">
+          <Link 
+            href="/dashboard"
+            className={`flex items-center gap-3 overflow-hidden group cursor-pointer ${!expanded ? 'justify-center w-full translate-x-2' : ''}`}
+            title="Return to Dashboard"
+          >
+            <div className="h-10 w-10 flex items-center justify-center shrink-0 bg-transparent shadow-none transform group-hover:scale-105 transition">
               <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain bg-transparent" />
             </div>
             <div className={`transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden ${expanded ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none w-0'}`}>
-              <span className="text-base font-black tracking-tight text-white">CookieLogix</span>
+              <span className="text-base font-black tracking-tight text-white group-hover:text-emerald-400 transition">CookieLogix</span>
             </div>
-          </div>
+          </Link>
 
           <button
             onClick={() => setExpanded(!expanded)}
-            className={`text-slate-400 hover:text-emerald-400 p-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 transition shadow-sm shrink-0 flex items-center justify-center ${!expanded ? 'w-12 h-12' : ''}`}
+            className={`text-slate-400 hover:text-emerald-400 p-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 transition shadow-sm shrink-0 flex items-center justify-center cursor-pointer ${!expanded ? 'w-12 h-12' : ''}`}
             title={expanded ? 'Collapse Sidebar' : 'Expand Sidebar'}
           >
             {expanded ? <ChevronLeftIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-5 h-5" />}
@@ -89,8 +93,8 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
                   </Link>
 
                   {!expanded && hoveredId === item.id && (
-                    <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-transparent pointer-events-none z-50 whitespace-nowrap animate-fade-in">
-                      <span className="text-white font-black text-sm tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+                    <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl pointer-events-none z-50 whitespace-nowrap shadow-xl">
+                      <span className="text-white font-bold text-xs tracking-wider">
                         {item.label}
                       </span>
                     </div>
@@ -124,8 +128,8 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
                   </Link>
 
                   {!expanded && hoveredId === item.id && (
-                    <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-transparent pointer-events-none z-50 whitespace-nowrap animate-fade-in">
-                      <span className="text-white font-black text-sm tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+                    <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl pointer-events-none z-50 whitespace-nowrap shadow-xl">
+                      <span className="text-white font-bold text-xs tracking-wider">
                         {item.label}
                       </span>
                     </div>
@@ -148,7 +152,7 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
           </div>
           <Link 
             href="/docs"
-            className="flex items-center justify-center gap-1.5 w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
+            className="flex items-center justify-center gap-1.5 w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider cursor-pointer"
           >
             <DocumentTextIcon className="w-4 h-4" /> Docs & Grant
           </Link>
