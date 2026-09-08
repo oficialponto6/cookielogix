@@ -1,6 +1,22 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
+import {
+  ChartBarSquareIcon,
+  BriefcaseIcon,
+  BellAlertIcon,
+  StarIcon,
+  BoltIcon,
+  DocumentTextIcon,
+  Cog6ToothIcon,
+  ShieldCheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MagnifyingGlassIcon,
+  ExclamationTriangleIcon,
+  ArrowRightIcon,
+  PlusIcon
+} from '@heroicons/react/24/outline';
 
 const COOKIE_RPC = 'https://rpc.cookiescan.io';
 const connection = new Connection(COOKIE_RPC, 'confirmed');
@@ -13,6 +29,9 @@ export default function CookieLogixDashboard() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeNav, setActiveNav] = useState<'dashboard' | 'wallets' | 'alerts' | 'watchlist' | 'transaction' | 'reports' | 'settings'>('dashboard');
   
+  // Estado para recolher/expandir a sidebar
+  const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
+
   const [intentInput, setIntentInput] = useState<string>('');
   const [watchlistItems, setWatchlistItems] = useState<string[]>(['0x742d35...9c4f8a', '0x8f3a21...4b7e9d']);
   const [newWatchAddress, setNewWatchAddress] = useState<string>('');
@@ -138,8 +157,9 @@ Date: 2026-09-08
       <div className="fixed inset-0 bg-[#02050b] flex flex-col items-center justify-center z-50 overflow-hidden font-sans">
         <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center opacity-30 pointer-events-none"></div>
         <div className="relative z-10 flex flex-col items-center space-y-6">
-          <div className="h-20 w-20 rounded-3xl bg-[#060a12]/80 border border-emerald-500/30 flex items-center justify-center shadow-2xl shadow-emerald-500/20 overflow-hidden backdrop-blur-md">
-            <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-cover" />
+          {/* Logo limpa sem fundo quadrado */}
+          <div className="h-24 w-24 flex items-center justify-center drop-shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+            <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain" />
           </div>
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-200 to-emerald-500 uppercase">
@@ -160,53 +180,73 @@ Date: 2026-09-08
       {/* BACKGROUND DE IMAGEM PERSONALIZADO (cookielogix-bg.jpg) */}
       <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
-      {/* 1. SIDEBAR EXECUTIVA */}
-      <aside className="w-64 bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-6 shrink-0 z-20 shadow-2xl">
+      {/* 1. SIDEBAR EXECUTIVA RETRÁTIL COM LOGO LIMPA */}
+      <aside className={`transition-all duration-300 ease-in-out bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-5 shrink-0 z-20 shadow-2xl ${sidebarExpanded ? 'w-64' : 'w-20'}`}>
         <div className="space-y-8">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-[#090d18] border border-emerald-500/30 flex items-center justify-center overflow-hidden shadow-lg shadow-emerald-500/10">
-              <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-cover" />
+          
+          {/* Logo sem caixas escuras e Botão de Minimizar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 overflow-hidden">
+              <div className="h-10 w-10 flex items-center justify-center shrink-0 drop-shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+                <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain" />
+              </div>
+              {sidebarExpanded && (
+                <span className="text-base font-black tracking-tight text-white whitespace-nowrap">CookieLogix</span>
+              )}
             </div>
-            <span className="text-base font-black tracking-tight text-white">CookieLogix</span>
+
+            <button
+              onClick={() => setSidebarExpanded(!sidebarExpanded)}
+              className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 transition"
+              title={sidebarExpanded ? 'Collapse Sidebar' : 'Expand Sidebar'}
+            >
+              {sidebarExpanded ? <ChevronLeftIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
+            </button>
           </div>
 
           <div className="space-y-6">
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">Overview</p>
+              {sidebarExpanded && (
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Overview</p>
+              )}
               <nav className="space-y-1">
                 {[
-                  { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-                  { id: 'wallets', label: 'Wallets', icon: '💼' },
-                  { id: 'alerts', label: 'Alerts', icon: '🔔' },
-                  { id: 'watchlist', label: 'Watchlist', icon: '⭐' },
-                  { id: 'transaction', label: 'Transaction', icon: '⚡' },
+                  { id: 'dashboard', label: 'Dashboard', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
+                  { id: 'wallets', label: 'Wallets', icon: <BriefcaseIcon className="w-5 h-5" /> },
+                  { id: 'alerts', label: 'Alerts', icon: <BellAlertIcon className="w-5 h-5" /> },
+                  { id: 'watchlist', label: 'Watchlist', icon: <StarIcon className="w-5 h-5" /> },
+                  { id: 'transaction', label: 'Transaction', icon: <BoltIcon className="w-5 h-5" /> },
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveNav(item.id as any)}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'}`}
+                    title={!sidebarExpanded ? item.label : ''}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center' : ''}`}
                   >
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
+                    <span className="shrink-0">{item.icon}</span>
+                    {sidebarExpanded && <span>{item.label}</span>}
                   </button>
                 ))}
               </nav>
             </div>
 
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-3">Tools</p>
+              {sidebarExpanded && (
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Tools</p>
+              )}
               <nav className="space-y-1">
                 {[
-                  { id: 'reports', label: 'Reports', icon: '📄' },
-                  { id: 'settings', label: 'Settings', icon: '⚙️' },
+                  { id: 'reports', label: 'Reports', icon: <DocumentTextIcon className="w-5 h-5" /> },
+                  { id: 'settings', label: 'Settings', icon: <Cog6ToothIcon className="w-5 h-5" /> },
                 ].map((item) => (
                   <button
                     key={item.id}
                     onClick={() => setActiveNav(item.id as any)}
-                    className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'}`}
+                    title={!sidebarExpanded ? item.label : ''}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center' : ''}`}
                   >
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
+                    <span className="shrink-0">{item.icon}</span>
+                    {sidebarExpanded && <span>{item.label}</span>}
                   </button>
                 ))}
               </nav>
@@ -215,21 +255,23 @@ Date: 2026-09-08
         </div>
 
         {/* Docs & Grant Card in Sidebar */}
-        <div className="bg-[#080c16]/90 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl space-y-3 shadow-xl relative overflow-hidden">
-          <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-sm">
-            🛡️
+        {sidebarExpanded && (
+          <div className="bg-[#080c16]/90 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl space-y-3 shadow-xl relative overflow-hidden">
+            <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <ShieldCheckIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-white">Startup Grant</h4>
+              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Webacy & DD.xyz Spec.</p>
+            </div>
+            <a 
+              href="/docs"
+              className="flex items-center justify-center gap-1.5 w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
+            >
+              <DocumentTextIcon className="w-4 h-4" /> Docs & Grant
+            </a>
           </div>
-          <div>
-            <h4 className="text-xs font-bold text-white">Startup Grant</h4>
-            <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Webacy & DD.xyz Spec.</p>
-          </div>
-          <a 
-            href="/docs"
-            className="block w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
-          >
-            📄 Docs & Grant
-          </a>
-        </div>
+        )}
       </aside>
 
       {/* 2. MAIN CONTENT AREA */}
@@ -241,13 +283,14 @@ Date: 2026-09-08
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:block">
               {activeNav.toUpperCase()}
             </h2>
-            <form onSubmit={handleSearchScan} className="flex-1 relative">
+            <form onSubmit={handleSearchScan} className="flex-1 relative flex items-center">
+              <MagnifyingGlassIcon className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search wallet address / ENS / tx hash..."
-                className="w-full bg-[#080c16]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl px-4 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 shadow-inner font-mono"
+                className="w-full bg-[#080c16]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 shadow-inner font-mono"
               />
             </form>
           </div>
@@ -257,7 +300,7 @@ Date: 2026-09-08
               href="/docs"
               className="hidden sm:flex bg-[#080c16]/80 backdrop-blur-md hover:bg-[#0f1524] text-slate-300 border border-slate-800 px-4 py-2.5 rounded-2xl font-bold transition text-xs items-center gap-1.5 shadow-sm"
             >
-              📄 Docs & Grant
+              <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Docs & Grant
             </a>
             <div className="text-xs font-mono text-slate-400 hidden md:block bg-[#080c16]/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-800/80 shadow-inner">
               18:13 (UTC+6)
@@ -275,7 +318,7 @@ Date: 2026-09-08
         <div className="px-8 pt-10 pb-4 max-w-7xl mx-auto w-full">
           <div className="bg-[#060a14]/75 backdrop-blur-2xl border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-4">
             <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase relative z-10">
-              ✨ Webacy & DD.xyz Accelerator Engine
+              <ShieldCheckIcon className="w-4 h-4 text-emerald-400" /> Webacy & DD.xyz Accelerator Engine
             </div>
 
             <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-emerald-300 tracking-tight leading-tight max-w-4xl mx-auto relative z-10">
@@ -307,8 +350,8 @@ Date: 2026-09-08
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Scans</span>
                         <p className="text-xl font-mono font-black text-white mt-1">1234 times</p>
                       </div>
-                      <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg">
-                        🔍
+                      <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <MagnifyingGlassIcon className="w-5 h-5" />
                       </div>
                     </div>
 
@@ -317,8 +360,8 @@ Date: 2026-09-08
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Risk Detected</span>
                         <p className="text-xl font-mono font-black text-amber-400 mt-1">4 Mid 12 High</p>
                       </div>
-                      <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
-                        ⚠️
+                      <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                        <ExclamationTriangleIcon className="w-5 h-5" />
                       </div>
                     </div>
                   </div>
@@ -343,44 +386,80 @@ Date: 2026-09-08
                 </div>
               </div>
 
-              {/* Row 2 */}
+              {/* Row 2 - Gráfico em Barras Segmentadas Horizontais Neon */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl space-y-6 shadow-2xl">
-                  <div>
-                    <h3 className="text-sm font-bold text-white">Risk Breakdown</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">Interpretable of the 78 score based on weighted heuristics</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">Risk Breakdown</h3>
+                      <p className="text-xs text-slate-400 mt-0.5">Interpretable analysis of the 78 score based on weighted heuristics</p>
+                    </div>
+                    <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-xl border border-emerald-500/20">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[10px] font-bold text-emerald-400">Live Heuristics</span>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-4 gap-4 h-56 items-end pt-4 px-2">
-                    <div className="flex flex-col items-center gap-3 h-full justify-end">
-                      <span className="text-xs font-mono font-bold text-emerald-400">60%</span>
-                      <div className="w-full bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl h-[60%] flex flex-col items-center justify-end pb-3 relative overflow-hidden group shadow-lg">
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/70 via-teal-600/40 to-transparent rounded-2xl"></div>
-                        <span className="text-[10px] font-semibold text-white relative z-10 transform -rotate-90">Known Flag</span>
+                  <div className="space-y-4 pt-2">
+                    {/* Item 1: Known Flag (60%) */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-300 font-semibold">Known Flag</span>
+                        <span className="text-emerald-400 font-mono font-bold">60%</span>
+                      </div>
+                      <div className="grid grid-cols-8 gap-2">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 shadow-md shadow-emerald-500/30" />
+                        ))}
+                        {[6, 7, 8].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-slate-800/60 border border-slate-700/40" />
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-3 h-full justify-end">
-                      <span className="text-xs font-mono font-bold text-emerald-400">20%</span>
-                      <div className="w-full bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl h-[30%] flex flex-col items-center justify-end pb-3 relative overflow-hidden group shadow-lg">
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/60 via-teal-600/30 to-transparent rounded-2xl"></div>
-                        <span className="text-[10px] font-semibold text-white relative z-10 transform -rotate-90">Behavior</span>
+                    {/* Item 2: Behavior (20%) */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-300 font-semibold">Behavior Analysis</span>
+                        <span className="text-emerald-400 font-mono font-bold">20%</span>
+                      </div>
+                      <div className="grid grid-cols-8 gap-2">
+                        {[1, 2].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 shadow-md shadow-emerald-500/30" />
+                        ))}
+                        {[3, 4, 5, 6, 7, 8].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-slate-800/60 border border-slate-700/40" />
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-3 h-full justify-end">
-                      <span className="text-xs font-mono font-bold text-emerald-400">15%</span>
-                      <div className="w-full bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl h-[22%] flex flex-col items-center justify-end pb-3 relative overflow-hidden group shadow-lg">
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/50 via-teal-600/20 to-transparent rounded-2xl"></div>
-                        <span className="text-[10px] font-semibold text-white relative z-10 transform -rotate-90">Counterparty</span>
+                    {/* Item 3: Counterparty (15%) */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-300 font-semibold">Counterparty Risk</span>
+                        <span className="text-emerald-400 font-mono font-bold">15%</span>
+                      </div>
+                      <div className="grid grid-cols-8 gap-2">
+                        {[1].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-gradient-to-r from-teal-500 to-emerald-400 shadow-md shadow-emerald-500/30" />
+                        ))}
+                        {[2, 3, 4, 5, 6, 7, 8].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-slate-800/60 border border-slate-700/40" />
+                        ))}
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-3 h-full justify-end">
-                      <span className="text-xs font-mono font-bold text-emerald-400">5%</span>
-                      <div className="w-full bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 rounded-2xl h-[12%] flex flex-col items-center justify-end pb-3 relative overflow-hidden group shadow-lg">
-                        <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/40 via-teal-600/10 to-transparent rounded-2xl"></div>
-                        <span className="text-[10px] font-semibold text-white relative z-10 transform -rotate-90">Contract</span>
+                    {/* Item 4: Contract (5%) */}
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-medium">
+                        <span className="text-slate-300 font-semibold">Contract Integrity</span>
+                        <span className="text-emerald-400 font-mono font-bold">5%</span>
+                      </div>
+                      <div className="grid grid-cols-8 gap-2">
+                        <div className="h-3 rounded-full bg-emerald-500/50 border border-emerald-500/30 shadow-sm shadow-emerald-500/20" />
+                        {[2, 3, 4, 5, 6, 7, 8].map((i) => (
+                          <div key={i} className="h-3 rounded-full bg-slate-800/60 border border-slate-700/40" />
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -388,7 +467,9 @@ Date: 2026-09-08
 
                 <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/70 p-7 rounded-3xl space-y-4 shadow-2xl flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-white mb-1">🔥 Live Alerts Feed</h3>
+                    <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                      <BellAlertIcon className="w-4 h-4 text-emerald-400" /> Live Alerts Feed
+                    </h3>
                     <p className="text-xs text-slate-400 mb-4">Real-time web3 transaction intelligence logs.</p>
                   </div>
 
@@ -409,7 +490,7 @@ Date: 2026-09-08
                     className="pt-2 border-t border-slate-800/60 flex justify-between items-center text-xs text-emerald-400 font-semibold cursor-pointer hover:text-emerald-300 transition"
                   >
                     <span>View all security alerts</span>
-                    <span>→</span>
+                    <ArrowRightIcon className="w-3.5 h-3.5" />
                   </div>
                 </div>
               </div>
@@ -433,8 +514,8 @@ Date: 2026-09-08
 
               <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl flex justify-between items-center shadow-inner">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">
-                    💼
+                  <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                    <BriefcaseIcon className="w-6 h-6" />
                   </div>
                   <div>
                     <p className="text-xs font-mono font-bold text-white">
@@ -461,9 +542,9 @@ Date: 2026-09-08
                 </div>
                 <button 
                   onClick={handleAddAlert}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-lg"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-lg"
                 >
-                  + Simulate New Alert
+                  <PlusIcon className="w-4 h-4" /> Simulate New Alert
                 </button>
               </div>
 
@@ -534,9 +615,9 @@ Date: 2026-09-08
                     <button
                       key={idx}
                       onClick={() => setIntentInput(suggestion)}
-                      className="bg-[#090d18]/80 backdrop-blur-md hover:bg-[#0f1524] border border-slate-800/80 text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium transition shadow-sm"
+                      className="bg-[#090d18]/80 backdrop-blur-md hover:bg-[#0f1524] border border-slate-800/80 text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium transition shadow-sm flex items-center gap-1.5"
                     >
-                      💡 {suggestion}
+                      <BoltIcon className="w-3.5 h-3.5 text-emerald-400" /> {suggestion}
                     </button>
                   ))}
                 </div>
@@ -578,9 +659,9 @@ Date: 2026-09-08
                 </div>
                 <button 
                   onClick={handleDownloadReport} 
-                  className="bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
+                  className="bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 px-5 py-2.5 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider flex items-center gap-2"
                 >
-                  Download Report
+                  <DocumentTextIcon className="w-4 h-4" /> Download Report
                 </button>
               </div>
             </div>

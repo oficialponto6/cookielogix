@@ -1,5 +1,14 @@
 'use client';
 import { useState } from 'react';
+import {
+  ArrowLeftIcon,
+  ClipboardDocumentCheckIcon,
+  ClipboardIcon,
+  ShieldCheckIcon,
+  CpuChipIcon,
+  RocketLaunchIcon,
+  DocumentTextIcon
+} from '@heroicons/react/24/outline';
 
 export default function DocsPage() {
   const [copied, setCopied] = useState(false);
@@ -39,18 +48,19 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
             href="/"
             className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl"
           >
-            ← Back to CookieLogix dApp
+            <ArrowLeftIcon className="w-4 h-4" /> Back to CookieLogix dApp
           </a>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3.5 py-1.5 rounded-xl font-bold tracking-widest uppercase">
-              Startup Accelerator Grant Proposal (Webacy / DD.xyz)
+            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3.5 py-1.5 rounded-xl font-bold tracking-widest uppercase flex items-center gap-1.5">
+              <ShieldCheckIcon className="w-4 h-4" /> Startup Accelerator Grant Proposal (Webacy / DD.xyz)
             </span>
             <button
               onClick={copyMarkdown}
-              className="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20"
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 px-4 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20"
             >
-              {copied ? '✓ Copied Markdown' : '📋 Copy Grant Proposal'}
+              {copied ? <ClipboardDocumentCheckIcon className="w-4 h-4" /> : <ClipboardIcon className="w-4 h-4" />}
+              {copied ? 'Copied Markdown' : 'Copy Grant Proposal'}
             </button>
           </div>
         </div>
@@ -58,7 +68,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         {/* Hero Section da Documentação */}
         <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-4">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase relative z-10">
-            🍪 Official Technical Documentation
+            <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Official Technical Documentation
           </div>
 
           <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-emerald-300 tracking-tight leading-tight max-w-3xl mx-auto relative z-10">
@@ -73,7 +83,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         {/* Section 2: Core Architecture */}
         <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
           <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
-            <span className="text-xl">⚙️</span>
+            <CpuChipIcon className="w-6 h-6 text-emerald-400" />
             <h2 className="text-lg font-black text-white uppercase tracking-wider">Core Architecture & Integration</h2>
           </div>
           
@@ -83,14 +93,18 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
-              <h3 className="text-sm font-black text-emerald-400">1. Intent-Driven Engine</h3>
+              <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2">
+                <ShieldCheckIcon className="w-4 h-4" /> 1. Intent-Driven Engine
+              </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Translates user intent into secure SVM transactions with sub-second finality.
               </p>
             </div>
 
             <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
-              <h3 className="text-sm font-black text-emerald-400">2. Risk Intelligence Layer</h3>
+              <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2">
+                <CpuChipIcon className="w-4 h-4" /> 2. Risk Intelligence Layer
+              </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Aggregates multi-provider threat metrics to evaluate wallet and contract safety scores.
               </p>
@@ -101,7 +115,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         {/* Section 3: Grant Alignment */}
         <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
           <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
-            <span className="text-xl">🚀</span>
+            <RocketLaunchIcon className="w-6 h-6 text-emerald-400" />
             <h2 className="text-lg font-black text-white uppercase tracking-wider">Startup Accelerator Grant Alignment (Webacy / DD.xyz)</h2>
           </div>
 
