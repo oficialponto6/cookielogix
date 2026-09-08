@@ -1,6 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
+import { Toaster, ToastMessage } from './components/Toaster';
+import { ContractDrawer } from './components/ContractDrawer';
+import { FeeTracker } from './components/FeeTracker';
+import { Sidebar } from './components/Sidebar';
+import { Terminal } from './components/Terminal';
 import {
   ChartBarSquareIcon,
   BriefcaseIcon,
@@ -10,14 +15,11 @@ import {
   DocumentTextIcon,
   Cog6ToothIcon,
   ShieldCheckIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
   MagnifyingGlassIcon,
   ExclamationTriangleIcon,
   ArrowRightIcon,
   PlusIcon,
-  QuestionMarkCircleIcon,
-  CommandLineIcon
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
 const COOKIE_RPC = 'https://rpc.cookiescan.io';
@@ -27,18 +29,52 @@ export default function CookieLogixDashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
-  const [statusLog, setStatusLog] = useState<string>('Kernel active. Webacy Threat Intelligence & Cookie Chain SVM synchronized.');
+  const [statusLogType, setStatusLogType] = useState<string>('ready');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeNav, setActiveNav] = useState<'dashboard' | 'wallets' | 'alerts' | 'watchlist' | 'transaction' | 'reports' | 'settings'>('dashboard');
   
   const [sidebarExpanded, setSidebarExpanded] = useState<boolean>(true);
 
+  // Estados dos novos recursos enterprise
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [selectedContract, setSelectedContract] = useState<{
+    address: string;
+    name: string;
+    riskScore: number;
+    mintAuthority: boolean;
+    freezeAuthority: boolean;
+    lpLocked: boolean;
+  } | null>(null);
+
+  const addToast = (message: string, type: 'success' | 'warning' | 'error' = 'success') => {
+    const newToast: ToastMessage = { id: Date.now(), message, type };
+    setToasts((prev) => [newToast, ...prev]);
+  };
+
+  const removeToast = (id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const openInspector = (address: string) => {
+    setSelectedContract({
+      address,
+      name: 'Target Contract',
+      riskScore: 78,
+      mintAuthority: true,
+      freezeAuthority: false,
+      lpLocked: true
+    });
+    setDrawerOpen(true);
+    addToast(`Contract X-Ray opened for ${address.slice(0, 6)}...`, 'warning');
+  };
+
   const [intentInput, setIntentInput] = useState<string>('');
   const [watchlistItems, setWatchlistItems] = useState<string[]>(['0x742d35...9c4f8a', '0x8f3a21...4b7e9d']);
   const [newWatchAddress, setNewWatchAddress] = useState<string>('');
-  const [alertsList, setAlertsList] = useState<Array<{ id: number; type: string; message: string; time: string; severity: 'high' | 'mid' | 'low' }>>([
-    { id: 1, type: 'Critical Alert', message: 'Suspicious allowance detected on contract 0x99a...4b1', time: '10 mins ago', severity: 'high' },
-    { id: 2, type: 'Warning', message: 'Unusual outbound frequency on secondary router', time: '25 mins ago', severity: 'mid' }
+  const [alertsList, setAlertsList] = useState<Array<{ id: number; type: string; message: string; time: string; severity: 'high' | 'mid' | 'low'; address?: string }>>([
+    { id: 1, type: 'Critical Alert', message: 'Suspicious allowance detected on contract 0x99a...4b1', time: '10 mins ago', severity: 'high', address: '0x99a4b1723e4590128c71' },
+    { id: 2, type: 'Warning', message: 'Unusual outbound frequency on secondary router', time: '25 mins ago', severity: 'mid', address: '0x8f3a21b47e9d10293847' }
   ]);
 
   const [safetyScore, setSafetyScore] = useState<{ label: string; color: string; score: number }>({
@@ -52,18 +88,20 @@ export default function CookieLogixDashboard() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
+      addToast('CookieLogix Kernel synchronized successfully.', 'success');
     }, 1800);
     return () => clearTimeout(timer);
   }, []);
 
   const connectNightlyWallet = async () => {
     try {
-      setStatusLog('Establishing secure cryptographic handshake with Nightly Wallet...');
+      setStatusLogType('connecting');
       const provider = (window as any)?.nightly?.solana || (window as any)?.solana;
       
       if (!provider) {
         alert('Nightly Wallet not found! Please install the Nightly extension.');
-        setStatusLog('Error: Nightly Wallet extension missing.');
+        setStatusLogType('error');
+        addToast('Nightly Wallet extension not detected.', 'error');
         return;
       }
 
@@ -78,31 +116,40 @@ export default function CookieLogixDashboard() {
       }
 
       setWalletAddress(pubKeyStr);
-      setStatusLog(`Authenticated securely: ${pubKeyStr}`);
+      setStatusLogType('success_connect');
       setSafetyScore({ label: 'Safest', color: 'text-emerald-400', score: 99 });
+      addToast('Nightly Wallet connected securely!', 'success');
 
       const pubKey = new PublicKey(pubKeyStr);
       const lamports = await connection.getBalance(pubKey);
       setBalance(lamports / 1e9);
     } catch (error: any) {
       console.error(error);
-      setStatusLog(`Connection handshake failed: ${error.message}`);
+      setStatusLogType('error');
+      addToast('Wallet connection failed or canceled.', 'error');
     }
   };
 
   const handleSearchScan = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery) return;
-    setStatusLog(`Scanning target address/hash: ${searchQuery} via DD.xyz Threat Risks API...`);
+    setStatusLogType('scanning');
+    addToast('Initiating Webacy Threat Scan...', 'success');
     setTimeout(() => {
-      setStatusLog(`[SUCCESS] Scan complete for ${searchQuery}. Threat analysis verified.`);
+      setStatusLogType('success_scan');
+      addToast('Target hash evaluation complete. Secure.', 'success');
     }, 1500);
   };
 
   const handleExecuteIntent = (e: React.FormEvent) => {
     e.preventDefault();
     if (!intentInput) return;
-    setStatusLog(`Initializing SVM Intent Engine for: "${intentInput}"...\n[INFO] Running pre-execution security scan via Webacy...\n[SUCCESS] Intent executed securely on Cookie Chain. Zero threats found.`);
+    setStatusLogType('executing');
+    addToast('Executing SVM Intent pipeline...', 'success');
+    setTimeout(() => {
+      setStatusLogType('success_exec');
+      addToast('Intent executed successfully on Cookie Chain.', 'success');
+    }, 1500);
   };
 
   const handleAddToWatchlist = (e: React.FormEvent) => {
@@ -110,6 +157,7 @@ export default function CookieLogixDashboard() {
     if (!newWatchAddress) return;
     setWatchlistItems([newWatchAddress, ...watchlistItems]);
     setNewWatchAddress('');
+    addToast('Address successfully added to Watchlist.', 'success');
   };
 
   const handleAddAlert = () => {
@@ -118,9 +166,11 @@ export default function CookieLogixDashboard() {
       type: 'Warning',
       message: 'New high-risk transaction monitored on Cookie Chain SVM.',
       time: 'Just now',
-      severity: 'mid' as const
+      severity: 'mid' as const,
+      address: '0x4f5a6b7c8d9e01234567'
     };
     setAlertsList([newAlert, ...alertsList]);
+    addToast('Simulated new high-risk security alert.', 'warning');
   };
 
   const handleDownloadReport = () => {
@@ -151,6 +201,7 @@ Date: 2026-09-08
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    addToast('Security report downloaded successfully.', 'success');
   };
 
   if (loading) {
@@ -179,99 +230,19 @@ Date: 2026-09-08
       
       <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
-      {/* 1. SIDEBAR */}
-      <aside className={`transition-all duration-300 ease-in-out bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-5 shrink-0 z-20 shadow-2xl ${sidebarExpanded ? 'w-64' : 'w-20'}`}>
-        <div className="space-y-8">
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 overflow-hidden">
-              <div className="h-10 w-10 flex items-center justify-center shrink-0 drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]">
-                <img src="/cookie-logo.png" alt="CookieLogix Logo" className="h-full w-full object-contain" />
-              </div>
-              {sidebarExpanded && (
-                <span className="text-base font-black tracking-tight text-white whitespace-nowrap">CookieLogix</span>
-              )}
-            </div>
+      {/* COMPONENTES ENTERPRISE */}
+      <Toaster toasts={toasts} removeToast={removeToast} />
+      <ContractDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} contractData={selectedContract} />
 
-            <button
-              onClick={() => setSidebarExpanded(!sidebarExpanded)}
-              className="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900/60 border border-slate-800 transition shadow-sm"
-              title={sidebarExpanded ? 'Collapse Sidebar' : 'Expand Sidebar'}
-            >
-              {sidebarExpanded ? <ChevronLeftIcon className="w-4 h-4" /> : <ChevronRightIcon className="w-4 h-4" />}
-            </button>
-          </div>
+      {/* SIDEBAR MODULARIZADA */}
+      <Sidebar 
+        expanded={sidebarExpanded} 
+        setExpanded={setSidebarExpanded} 
+        activeNav={activeNav} 
+        setActiveNav={setActiveNav} 
+      />
 
-          <div className="space-y-6">
-            <div>
-              {sidebarExpanded && (
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Overview</p>
-              )}
-              <nav className="space-y-1.5">
-                {[
-                  { id: 'dashboard', label: 'Dashboard', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
-                  { id: 'wallets', label: 'Wallets', icon: <BriefcaseIcon className="w-5 h-5" /> },
-                  { id: 'alerts', label: 'Alerts', icon: <BellAlertIcon className="w-5 h-5" /> },
-                  { id: 'watchlist', label: 'Watchlist', icon: <StarIcon className="w-5 h-5" /> },
-                  { id: 'transaction', label: 'Transaction', icon: <BoltIcon className="w-5 h-5" /> },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveNav(item.id as any)}
-                    title={!sidebarExpanded ? item.label : ''}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center hover:translate-x-0' : ''}`}
-                  >
-                    <span className="shrink-0">{item.icon}</span>
-                    {sidebarExpanded && <span>{item.label}</span>}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            <div>
-              {sidebarExpanded && (
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 px-2">Tools</p>
-              )}
-              <nav className="space-y-1.5">
-                {[
-                  { id: 'reports', label: 'Reports', icon: <DocumentTextIcon className="w-5 h-5" /> },
-                  { id: 'settings', label: 'Settings', icon: <Cog6ToothIcon className="w-5 h-5" /> },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveNav(item.id as any)}
-                    title={!sidebarExpanded ? item.label : ''}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!sidebarExpanded ? 'justify-center hover:translate-x-0' : ''}`}
-                  >
-                    <span className="shrink-0">{item.icon}</span>
-                    {sidebarExpanded && <span>{item.label}</span>}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </div>
-
-        {sidebarExpanded && (
-          <div className="bg-[#080c16]/90 backdrop-blur-xl border border-slate-800/80 p-4 rounded-2xl space-y-3 shadow-xl relative overflow-hidden">
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <ShieldCheckIcon className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-white">Startup Grant</h4>
-              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Webacy & DD.xyz Spec.</p>
-            </div>
-            <a 
-              href="/docs"
-              className="flex items-center justify-center gap-1.5 w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
-            >
-              <DocumentTextIcon className="w-4 h-4" /> Docs & Grant
-            </a>
-          </div>
-        )}
-      </aside>
-
-      {/* 2. MAIN CONTENT AREA */}
+      {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10">
         
         <header className="h-20 bg-[#03060e]/80 backdrop-blur-3xl border-b border-slate-800/60 px-8 flex items-center justify-between sticky top-0 z-30">
@@ -295,6 +266,8 @@ Date: 2026-09-08
           </div>
 
           <div className="flex items-center gap-4">
+            <FeeTracker />
+
             <div className="hidden xl:flex items-center gap-2 bg-[#080c16]/80 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-slate-800/80 text-[11px] font-mono text-slate-300 shadow-inner">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -302,13 +275,6 @@ Date: 2026-09-08
               </span>
               <span>22ms | RPC Synced</span>
             </div>
-
-            <a
-              href="/docs"
-              className="hidden sm:flex bg-[#080c16]/80 backdrop-blur-md hover:bg-[#0f1524] text-slate-300 border border-slate-800 px-4 py-2.5 rounded-2xl font-bold transition text-xs items-center gap-1.5 shadow-sm"
-            >
-              <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Docs & Grant
-            </a>
 
             <button
               onClick={connectNightlyWallet}
@@ -489,7 +455,12 @@ Date: 2026-09-08
 
                   <div className="space-y-3">
                     {alertsList.slice(0, 2).map((alert) => (
-                      <div key={alert.id} className={`bg-[#090d18]/80 backdrop-blur-md border p-4 rounded-2xl space-y-2 shadow-inner transition hover:translate-x-1 ${alert.severity === 'high' ? 'border-red-500/30 bg-red-500/5' : 'border-slate-800/80'}`}>
+                      <div 
+                        key={alert.id} 
+                        onClick={() => alert.address && openInspector(alert.address)}
+                        className={`bg-[#090d18]/80 backdrop-blur-md border p-4 rounded-2xl space-y-2 shadow-inner transition hover:translate-x-1 cursor-pointer ${alert.severity === 'high' ? 'border-red-500/30 bg-red-500/5' : 'border-slate-800/80'}`}
+                        title="Click to Inspect Contract X-Ray"
+                      >
                         <div className="flex justify-between items-center">
                           <span className={`text-[9px] px-2.5 py-0.5 rounded-md font-bold border ${alert.severity === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20 shadow-sm shadow-red-500/10' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>{alert.type}</span>
                           <span className="text-[10px] text-slate-500 font-mono">{alert.time}</span>
@@ -564,7 +535,11 @@ Date: 2026-09-08
 
               <div className="space-y-4">
                 {alertsList.map((alert) => (
-                  <div key={alert.id} className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex justify-between items-center shadow-inner">
+                  <div 
+                    key={alert.id} 
+                    onClick={() => alert.address && openInspector(alert.address)}
+                    className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl flex justify-between items-center shadow-inner cursor-pointer hover:border-emerald-500/40 transition"
+                  >
                     <div>
                       <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold border ${alert.severity === 'high' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>{alert.type}</span>
                       <p className="text-xs text-slate-200 mt-2 font-medium">{alert.message}</p>
@@ -601,9 +576,13 @@ Date: 2026-09-08
 
               <div className="space-y-3 pt-2">
                 {watchlistItems.map((addr, index) => (
-                  <div key={index} className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-4 rounded-2xl flex justify-between items-center shadow-inner font-mono">
+                  <div 
+                    key={index} 
+                    onClick={() => openInspector(addr)}
+                    className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-4 rounded-2xl flex justify-between items-center shadow-inner font-mono cursor-pointer hover:border-emerald-500/40 transition"
+                  >
                     <span className="text-xs text-white">{addr}</span>
-                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-xl font-bold">Monitored</span>
+                    <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-3 py-1 rounded-xl font-bold">Inspect X-Ray</span>
                   </div>
                 ))}
               </div>
@@ -653,24 +632,8 @@ Date: 2026-09-08
                 </button>
               </form>
 
-              {/* TERMINAL ESTILIZADO DE ALTO PADRÃO COM FEEDBACK VISUAL */}
-              <div className="bg-[#02050b] backdrop-blur-md border border-emerald-500/30 rounded-2xl p-5 font-mono text-xs text-emerald-400 shadow-2xl space-y-2 relative overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-8 bg-[#040812] border-b border-slate-800/80 px-4 flex items-center justify-between text-[10px] text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <CommandLineIcon className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Cookie Chain SVM Kernel Terminal v1.2</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-red-500/80" />
-                    <span className="h-2 w-2 rounded-full bg-amber-500/80" />
-                    <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
-                  </div>
-                </div>
-                <div className="pt-6 space-y-1.5 whitespace-pre-line">
-                  <span className="text-slate-500">$ intent-engine --status=ready --rpc=cookiescan.io</span>
-                  <p className="text-slate-200 mt-2 leading-relaxed">{statusLog}</p>
-                </div>
-              </div>
+              {/* TERMINAL MODULARIZADO */}
+              <Terminal statusLogType={statusLogType} />
             </div>
           )}
 
