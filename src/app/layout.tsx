@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { AppShell } from "./components/AppShell";
+import { WalletProvider } from "./context/WalletContext"; // <- Importante
 
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -25,7 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${jakarta.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-[#020617] text-slate-100 font-sans antialiased selection:bg-emerald-500 selection:text-slate-950">
-        {children}
+        <WalletProvider>
+          <AppShell>
+            {children}
+          </AppShell>
+        </WalletProvider>
       </body>
     </html>
   );

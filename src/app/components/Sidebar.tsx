@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   ChartBarSquareIcon,
   BriefcaseIcon,
@@ -16,25 +18,27 @@ import {
 interface SidebarProps {
   expanded: boolean;
   setExpanded: (val: boolean) => void;
-  activeNav: string;
-  setActiveNav: (nav: any) => void;
 }
 
-export function Sidebar({ expanded, setExpanded, activeNav, setActiveNav }: SidebarProps) {
+export function Sidebar({ expanded, setExpanded }: SidebarProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const pathname = usePathname(); // Pega a URL atual (ex: "/dashboard")
 
   const navItems = [
-    { id: 'dashboard', label: 'DASHBOARD', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
-    { id: 'wallets', label: 'WALLETS', icon: <BriefcaseIcon className="w-5 h-5" /> },
-    { id: 'alerts', label: 'ALERTS', icon: <BellAlertIcon className="w-5 h-5" /> },
-    { id: 'watchlist', label: 'WATCHLIST', icon: <StarIcon className="w-5 h-5" /> },
-    { id: 'transaction', label: 'TRANSACTION', icon: <BoltIcon className="w-5 h-5" /> },
+    { id: 'dashboard', label: 'DASHBOARD', icon: <ChartBarSquareIcon className="w-5 h-5" />, path: '/dashboard' },
+    { id: 'wallets', label: 'WALLETS', icon: <BriefcaseIcon className="w-5 h-5" />, path: '/wallets' },
+    { id: 'alerts', label: 'ALERTS', icon: <BellAlertIcon className="w-5 h-5" />, path: '/alerts' },
+    { id: 'watchlist', label: 'WATCHLIST', icon: <StarIcon className="w-5 h-5" />, path: '/watchlist' },
+    { id: 'transaction', label: 'TRANSACTION', icon: <BoltIcon className="w-5 h-5" />, path: '/transaction' },
   ];
 
   const toolItems = [
-    { id: 'reports', label: 'REPORTS', icon: <DocumentTextIcon className="w-5 h-5" /> },
-    { id: 'settings', label: 'SETTINGS', icon: <Cog6ToothIcon className="w-5 h-5" /> },
+    { id: 'reports', label: 'REPORTS', icon: <DocumentTextIcon className="w-5 h-5" />, path: '/reports' },
+    { id: 'settings', label: 'SETTINGS', icon: <Cog6ToothIcon className="w-5 h-5" />, path: '/settings' },
   ];
+
+  // Função auxiliar para verificar se a rota atual é a do botão
+  const isActive = (path: string) => pathname?.startsWith(path);
 
   return (
     <aside className={`transition-all duration-300 ease-in-out bg-[#050810]/85 backdrop-blur-3xl border-r border-slate-800/60 hidden lg:flex flex-col justify-between p-5 shrink-0 z-30 shadow-2xl relative ${expanded ? 'w-64' : 'w-20'}`}>
@@ -74,17 +78,16 @@ export function Sidebar({ expanded, setExpanded, activeNav, setActiveNav }: Side
                   onMouseEnter={() => !expanded && setHoveredId(item.id)}
                   onMouseLeave={() => !expanded && setHoveredId(null)}
                 >
-                  <button
-                    onClick={() => setActiveNav(item.id)}
-                    className={`w-full flex items-center rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${expanded ? 'px-3 py-2.5 gap-3' : 'p-3 justify-center'} ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!expanded ? 'hover:translate-x-0' : ''}`}
+                  <Link
+                    href={item.path}
+                    className={`w-full flex items-center rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${expanded ? 'px-3 py-2.5 gap-3' : 'p-3 justify-center'} ${isActive(item.path) ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!expanded ? 'hover:translate-x-0' : ''}`}
                   >
                     <span className="shrink-0 flex items-center justify-center">{item.icon}</span>
                     <span className={`transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden ${expanded ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none w-0'}`}>
                       {item.label}
                     </span>
-                  </button>
+                  </Link>
 
-                  {/* Tooltip flutuante individual em branco exatamente como no exemplo */}
                   {!expanded && hoveredId === item.id && (
                     <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-transparent pointer-events-none z-50 whitespace-nowrap animate-fade-in">
                       <span className="text-white font-black text-sm tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
@@ -110,17 +113,16 @@ export function Sidebar({ expanded, setExpanded, activeNav, setActiveNav }: Side
                   onMouseEnter={() => !expanded && setHoveredId(item.id)}
                   onMouseLeave={() => !expanded && setHoveredId(null)}
                 >
-                  <button
-                    onClick={() => setActiveNav(item.id)}
-                    className={`w-full flex items-center rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${expanded ? 'px-3 py-2.5 gap-3' : 'p-3 justify-center'} ${activeNav === item.id ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!expanded ? 'hover:translate-x-0' : ''}`}
+                  <Link
+                    href={item.path}
+                    className={`w-full flex items-center rounded-xl text-xs font-medium transition-all transform hover:translate-x-1 ${expanded ? 'px-3 py-2.5 gap-3' : 'p-3 justify-center'} ${isActive(item.path) ? 'bg-gradient-to-r from-emerald-500/25 to-teal-500/10 text-emerald-400 border border-emerald-500/30 shadow-inner backdrop-blur-md font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#080c16]/80'} ${!expanded ? 'hover:translate-x-0' : ''}`}
                   >
                     <span className="shrink-0 flex items-center justify-center">{item.icon}</span>
                     <span className={`transition-opacity duration-200 ease-in-out whitespace-nowrap overflow-hidden ${expanded ? 'opacity-100 delay-100' : 'opacity-0 pointer-events-none w-0'}`}>
                       {item.label}
                     </span>
-                  </button>
+                  </Link>
 
-                  {/* Tooltip flutuante individual em branco */}
                   {!expanded && hoveredId === item.id && (
                     <div className="absolute left-[78px] top-1/2 -translate-y-1/2 bg-transparent pointer-events-none z-50 whitespace-nowrap animate-fade-in">
                       <span className="text-white font-black text-sm tracking-wider drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
@@ -144,12 +146,12 @@ export function Sidebar({ expanded, setExpanded, activeNav, setActiveNav }: Side
             <h4 className="text-xs font-bold text-white">Startup Grant</h4>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Webacy & DD.xyz Spec.</p>
           </div>
-          <a 
+          <Link 
             href="/docs"
             className="flex items-center justify-center gap-1.5 w-full text-center bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 py-2 rounded-xl text-xs font-black transition shadow-lg shadow-emerald-500/20 uppercase tracking-wider"
           >
             <DocumentTextIcon className="w-4 h-4" /> Docs & Grant
-          </a>
+          </Link>
         </div>
       </div>
     </aside>
