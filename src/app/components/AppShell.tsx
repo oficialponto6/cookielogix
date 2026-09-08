@@ -4,14 +4,19 @@ import { Sidebar } from './Sidebar';
 import { FeeTracker } from './FeeTracker';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
-import { useWallet } from '../context/WalletContext'; // <- Importando o contexto
+import { useWallet } from '../context/WalletContext';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const { walletAddress, connectWallet } = useWallet(); // <- Usando o contexto global
+  const { walletAddress, connectWallet } = useWallet();
   const pathname = usePathname();
 
   const routeName = pathname?.split('/')[1] || 'dashboard';
+
+  // Se estiver na raiz ("/"), renderiza apenas o conteúdo (a tela de boot) sem a Sidebar e sem o Header
+  if (pathname === '/') {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen text-slate-100 font-sans flex antialiased relative overflow-x-hidden bg-[#02050b]">
