@@ -38,10 +38,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen text-slate-100 font-sans flex antialiased relative overflow-x-hidden bg-[#02050b]">
       <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
+      {/* Sidebar Desktop Original (Inalterada e Perfeita) */}
       <Sidebar expanded={sidebarExpanded} setExpanded={setSidebarExpanded} />
 
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pl-14 sm:pl-0">
-        <header className="h-20 bg-[#03060e]/60 backdrop-blur-2xl border-b border-slate-800/60 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      {/* Main Container - Sem invasão lateral no mobile */}
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pb-24 lg:pb-0">
+        <header className="h-20 bg-[#03060e]/70 backdrop-blur-2xl border-b border-slate-800/60 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 sm:gap-6 w-full max-w-xl">
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:block">
               {routeName.toUpperCase()}
@@ -78,21 +80,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {/* CONTAINER DO CONTEÚDO COM ENQUADRAMENTO CORRETO PARA MOBILE */}
+        {/* Conteúdo com largura total e resguardo lateral correto */}
         <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full">
           {children}
         </div>
 
-        {/* BARRA LATERAL ESQUERDA MOBILE (Esticada de cima a baixo) */}
-        <nav aria-label="Mobile Sidebar Navigation" className="lg:hidden fixed left-0 top-0 bottom-0 w-14 bg-[#02050b]/90 backdrop-blur-2xl border-r border-slate-800/40 flex flex-col items-center justify-center gap-8 z-40 shadow-2xl">
+        {/* BARRA INFERIOR MÓVEL FLUTUANTE (Design Minimalista, Sem Invasão de Tela) */}
+        <nav aria-label="Mobile Bottom Navigation" className="lg:hidden fixed bottom-3 left-4 right-4 bg-[#050810]/95 backdrop-blur-2xl border border-slate-800/80 px-4 py-2.5 rounded-2xl flex items-center justify-around z-40 shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <button
                 key={item.id}
                 onClick={() => router.push(item.path)}
-                title={item.label}
-                className={`p-3 rounded-xl transition ${isActive ? 'text-emerald-400 scale-110 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`flex flex-col items-center justify-center p-2 rounded-xl transition ${isActive ? 'text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 shadow-inner' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {item.icon}
               </button>
