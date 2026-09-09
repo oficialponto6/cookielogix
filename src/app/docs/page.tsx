@@ -7,7 +7,8 @@ import {
   ShieldCheckIcon,
   CpuChipIcon,
   RocketLaunchIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ServerIcon
 } from '@heroicons/react/24/outline';
 
 export default function DocsPage() {
@@ -65,7 +66,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
           </div>
         </div>
 
-        {/* Hero Section da Documentação (Com correção de line-height) */}
+        {/* Hero Section */}
         <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase relative z-10">
             <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Official Technical Documentation
@@ -134,6 +135,16 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
               </p>
             </div>
           </div>
+        </div>
+
+        {/* 🌟 Rodapé de Agradecimento e Créditos Institucionais */}
+        <div className="bg-[#060a14]/60 backdrop-blur-xl border border-slate-800/60 p-6 rounded-2xl text-center font-mono text-xs text-slate-500 space-y-2">
+          <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold uppercase tracking-widest text-[10px]">
+            <ServerIcon className="w-3.5 h-3.5" /> Ecosystem Infrastructure & Partnerships
+          </div>
+          <p>
+            Powered by Cookie Chain SVM (<code className="text-slate-300">rpc.cookiescan.io</code>). Threat intelligence telemetry secured in collaboration with Webacy & DD.xyz protocols.
+          </p>
         </div>
 
       </div>

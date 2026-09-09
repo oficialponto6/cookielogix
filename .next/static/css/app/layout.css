@@ -1176,6 +1176,9 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(6 10 20 / var(--tw-bg-opacity, 1));
 }
+.bg-\[\#060a14\]\/60 {
+  background-color: rgb(6 10 20 / 0.6);
+}
 .bg-\[\#060a14\]\/80 {
   background-color: rgb(6 10 20 / 0.8);
 }
@@ -1582,17 +1585,14 @@ video {
 .uppercase {
   text-transform: uppercase;
 }
+.leading-normal {
+  line-height: 1.5;
+}
 .leading-relaxed {
   line-height: 1.625;
 }
 .leading-snug {
   line-height: 1.375;
-}
-.leading-tight {
-  line-height: 1.25;
-}
-.leading-normal {
-  line-height: 1.5;
 }
 .tracking-\[0\.25em\] {
   letter-spacing: 0.25em;
