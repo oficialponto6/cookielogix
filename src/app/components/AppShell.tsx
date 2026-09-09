@@ -78,10 +78,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        {children}
+        {/* CONTAINER DO CONTEÚDO COM ENQUADRAMENTO CORRETO PARA MOBILE */}
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full">
+          {children}
+        </div>
 
-        {/* BARRA LATERAL ESQUERDA MOBILE (Somente Ícones, Sem Fundo, Vertical) */}
-        <nav aria-label="Mobile Sidebar Navigation" className="lg:hidden fixed left-0 top-20 bottom-0 w-14 bg-[#02050b]/80 backdrop-blur-xl border-r border-slate-800/40 flex flex-col items-center justify-start py-6 gap-6 z-40 shadow-2xl">
+        {/* BARRA LATERAL ESQUERDA MOBILE (Esticada de cima a baixo) */}
+        <nav aria-label="Mobile Sidebar Navigation" className="lg:hidden fixed left-0 top-0 bottom-0 w-14 bg-[#02050b]/90 backdrop-blur-2xl border-r border-slate-800/40 flex flex-col items-center justify-center gap-8 z-40 shadow-2xl">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -89,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={item.id}
                 onClick={() => router.push(item.path)}
                 title={item.label}
-                className={`p-2.5 rounded-xl transition ${isActive ? 'text-emerald-400 scale-110' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`p-3 rounded-xl transition ${isActive ? 'text-emerald-400 scale-110 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {item.icon}
               </button>
