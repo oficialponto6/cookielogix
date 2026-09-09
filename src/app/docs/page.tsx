@@ -38,13 +38,13 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
   return (
     <div className="min-h-screen text-slate-100 font-sans relative overflow-x-hidden selection:bg-emerald-500 selection:text-slate-950 bg-[#02050b]">
       
-      {/* Background Glow & FX */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-[#02050b] to-[#02050b] pointer-events-none z-0"></div>
+      {/* Background Image idêntica ao AppShell principal */}
+      <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 relative z-10 space-y-10">
         
         {/* Top Navigation & Action Bar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#060a14]/85 backdrop-blur-3xl border border-slate-800/80 p-6 rounded-3xl gap-4 shadow-2xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#03060e]/50 backdrop-blur-2xl border border-slate-800/40 p-6 rounded-3xl gap-4 shadow-2xl">
           <a
             href="/"
             className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl cursor-pointer"
@@ -67,7 +67,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         </div>
 
         {/* Hero Section */}
-        <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-6">
+        <div className="bg-[#03060e]/40 backdrop-blur-xl border border-slate-800/40 p-10 rounded-3xl relative overflow-hidden shadow-2xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-[11px] font-bold text-emerald-400 tracking-widest uppercase relative z-10">
             <DocumentTextIcon className="w-4 h-4 text-emerald-400" /> Official Technical Documentation
           </div>
@@ -82,18 +82,18 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         </div>
 
         {/* Section 2: Core Architecture */}
-        <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
-          <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
+        <div className="bg-[#03060e]/40 backdrop-blur-xl border border-slate-800/40 p-8 rounded-3xl space-y-6 shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4">
             <CpuChipIcon className="w-6 h-6 text-emerald-400" />
             <h2 className="text-lg font-black text-white uppercase tracking-wider">Core Architecture & Integration</h2>
           </div>
           
           <p className="text-xs text-slate-400 leading-relaxed">
-            The platform combines direct high-throughput RPC communication (<code className="text-emerald-400 font-mono bg-[#090d18] px-2 py-0.5 rounded border border-slate-800">https://rpc.cookiescan.io</code>) with multi-provider risk analysis layers. Every intent processed via the SVM terminal undergoes rigorous pre-execution scanning.
+            The platform combines direct high-throughput RPC communication (<code className="text-emerald-400 font-mono bg-[#03060e]/60 px-2 py-0.5 rounded border border-slate-800/40">https://rpc.cookiescan.io</code>) with multi-provider risk analysis layers. Every intent processed via the SVM terminal undergoes rigorous pre-execution scanning.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-            <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
+            <div className="bg-[#03060e]/30 backdrop-blur-md border border-slate-800/30 p-6 rounded-2xl space-y-3 shadow-inner">
               <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2">
                 <ShieldCheckIcon className="w-4 h-4" /> 1. Intent-Driven Engine
               </h3>
@@ -102,7 +102,7 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
               </p>
             </div>
 
-            <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-6 rounded-2xl space-y-3 shadow-inner">
+            <div className="bg-[#03060e]/30 backdrop-blur-md border border-slate-800/30 p-6 rounded-2xl space-y-3 shadow-inner">
               <h3 className="text-sm font-black text-emerald-400 flex items-center gap-2">
                 <CpuChipIcon className="w-4 h-4" /> 2. Risk Intelligence Layer
               </h3>
@@ -114,21 +114,21 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
         </div>
 
         {/* Section 3: Grant Alignment */}
-        <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-8 rounded-3xl space-y-6 shadow-2xl">
-          <div className="flex items-center gap-3 border-b border-slate-800/80 pb-4">
+        <div className="bg-[#03060e]/40 backdrop-blur-xl border border-slate-800/40 p-8 rounded-3xl space-y-6 shadow-2xl">
+          <div className="flex items-center gap-3 border-b border-slate-800/40 pb-4">
             <RocketLaunchIcon className="w-6 h-6 text-emerald-400" />
             <h2 className="text-lg font-black text-white uppercase tracking-wider">Startup Accelerator Grant Alignment (Webacy / DD.xyz)</h2>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl space-y-2">
+            <div className="bg-[#03060e]/30 backdrop-blur-md border border-slate-800/30 p-5 rounded-2xl space-y-2">
               <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wide">Pre-Execution Protection</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
                 Mitigates malicious transactions before broadcast through integrated Threat Risks and Exposure Risk APIs.
               </p>
             </div>
 
-            <div className="bg-[#090d18]/80 backdrop-blur-md border border-slate-800/80 p-5 rounded-2xl space-y-2">
+            <div className="bg-[#03060e]/30 backdrop-blur-md border border-slate-800/30 p-5 rounded-2xl space-y-2">
               <h4 className="text-xs font-black text-emerald-400 uppercase tracking-wide">Autonomous Security</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
                 Fully functional risk scanner with live alerts feed, telemetry metrics, and multi-layered audit dashboards.
@@ -137,8 +137,8 @@ CookieLogix is built for the Cookie Chain (SVM) ecosystem, bridging high-speed i
           </div>
         </div>
 
-        {/* 🌟 Rodapé de Agradecimento e Créditos Institucionais */}
-        <div className="bg-[#060a14]/60 backdrop-blur-xl border border-slate-800/60 p-6 rounded-2xl text-center font-mono text-xs text-slate-500 space-y-2">
+        {/* Rodapé Institucional */}
+        <div className="bg-[#03060e]/30 backdrop-blur-xl border border-slate-800/30 p-6 rounded-2xl text-center font-mono text-xs text-slate-500 space-y-2">
           <div className="flex items-center justify-center gap-2 text-emerald-400 font-bold uppercase tracking-widest text-[10px]">
             <ServerIcon className="w-3.5 h-3.5" /> Ecosystem Infrastructure & Partnerships
           </div>
