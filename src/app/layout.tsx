@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "./components/AppShell";
-import { WalletProvider } from "./context/WalletContext"; // <- Importante[cite: 5]
+import { WalletProvider } from "./context/WalletContext";
 
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin"],
@@ -17,6 +17,9 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "CookieLogix | Autonomous SVM Intent & Due Diligence Engine",
   description: "Next-gen Web3 security intelligence and intent cApp powered by Cookie Chain.",
+  icons: {
+    icon: "/cookie-logo.png",
+  },
   openGraph: {
     title: "CookieLogix | Autonomous SVM Intent & Due Diligence Engine",
     description: "Next-gen Web3 security intelligence and intent cApp powered by Cookie Chain. Verified via Webacy & DD.xyz protocols.",
