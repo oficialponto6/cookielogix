@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary", // Exibe a logo em formato de ícone/quadrado ao lado do texto
+    card: "summary",
     title: "CookieLogix | Autonomous SVM Intent & Due Diligence Engine",
     description: "Next-gen Web3 security intelligence and intent cApp powered by Cookie Chain.",
     images: ["https://cookielogix.vercel.app/cookie-logo.png"],
