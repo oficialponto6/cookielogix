@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <Sidebar expanded={sidebarExpanded} setExpanded={setSidebarExpanded} />
 
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pb-28 lg:pb-0">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pl-14 sm:pl-0">
         <header className="h-20 bg-[#03060e]/60 backdrop-blur-2xl border-b border-slate-800/60 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 sm:gap-6 w-full max-w-xl">
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:block">
@@ -80,18 +80,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {children}
 
-        {/* BARRA DE NAVEGAÇÃO INFERIOR TRANSPARENTE E FUNCIONAL PARA MOBILE */}
-        <nav aria-label="Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#02050b]/90 backdrop-blur-xl border-t border-slate-800/40 px-2 py-2 flex items-center justify-around z-40 shadow-2xl">
+        {/* BARRA LATERAL ESQUERDA MOBILE (Somente Ícones, Sem Fundo, Vertical) */}
+        <nav aria-label="Mobile Sidebar Navigation" className="lg:hidden fixed left-0 top-20 bottom-0 w-14 bg-[#02050b]/80 backdrop-blur-xl border-r border-slate-800/40 flex flex-col items-center justify-start py-6 gap-6 z-40 shadow-2xl">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <button
                 key={item.id}
                 onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition ${isActive ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
+                title={item.label}
+                className={`p-2.5 rounded-xl transition ${isActive ? 'text-emerald-400 scale-110' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {item.icon}
-                <span className="text-[10px] font-bold mt-0.5 uppercase tracking-tight">{item.label}</span>
               </button>
             );
           })}
