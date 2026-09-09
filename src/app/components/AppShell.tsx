@@ -10,14 +10,14 @@ import {
   BoltIcon, 
   Cog6ToothIcon 
 } from '@heroicons/react/24/outline';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useWallet } from '../context/WalletContext';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [activeNav, setActiveNav] = useState<'dashboard' | 'wallets' | 'alerts' | 'watchlist' | 'transaction' | 'reports' | 'settings'>('dashboard');
   const { walletAddress, connectWallet } = useWallet();
   const pathname = usePathname();
+  const router = useRouter();
 
   const routeName = pathname?.split('/')[1] || 'dashboard';
 
@@ -26,14 +26,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  const navItems = [
+    { id: 'dashboard', path: '/dashboard', label: 'Dashboard', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
+    { id: 'wallets', path: '/wallets', label: 'Wallets', icon: <BriefcaseIcon className="w-5 h-5" /> },
+    { id: 'alerts', path: '/alerts', label: 'Alerts', icon: <BellAlertIcon className="w-5 h-5" /> },
+    { id: 'transaction', path: '/transaction', label: 'Tx', icon: <BoltIcon className="w-5 h-5" /> },
+    { id: 'settings', path: '/settings', label: 'Settings', icon: <Cog6ToothIcon className="w-5 h-5" /> },
+  ];
+
   return (
     <div className="min-h-screen text-slate-100 font-sans flex antialiased relative overflow-x-hidden bg-[#02050b]">
       <div className="absolute inset-0 bg-[url('/cookielogix-bg.jpg')] bg-cover bg-center bg-fixed opacity-75 pointer-events-none z-0"></div>
 
       <Sidebar expanded={sidebarExpanded} setExpanded={setSidebarExpanded} />
 
-      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pb-20 lg:pb-0">
-        <header className="h-20 bg-[#03060e]/80 backdrop-blur-3xl border-b border-slate-800/60 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <main className="flex-1 flex flex-col min-w-0 overflow-y-auto z-10 h-screen pb-28 lg:pb-0">
+        <header className="h-20 bg-[#03060e]/60 backdrop-blur-2xl border-b border-slate-800/60 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-4 sm:gap-6 w-full max-w-xl">
             <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] hidden sm:block">
               {routeName.toUpperCase()}
@@ -72,27 +80,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {children}
 
-        {/* BARRA DE NAVEGAÇÃO INFERIOR EXCLUSIVA PARA MOBILE (Bottom Bar) */}
-        <nav aria-label="Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#03060e]/95 backdrop-blur-2xl border-t border-slate-800/80 px-4 flex items-center justify-around z-40 shadow-2xl">
-          {[
-            { id: 'dashboard', label: 'Dashboard', icon: <ChartBarSquareIcon className="w-5 h-5" /> },
-            { id: 'wallets', label: 'Wallets', icon: <BriefcaseIcon className="w-5 h-5" /> },
-            { id: 'alerts', label: 'Alerts', icon: <BellAlertIcon className="w-5 h-5" /> },
-            { id: 'transaction', label: 'Tx', icon: <BoltIcon className="w-5 h-5" /> },
-            { id: 'settings', label: 'Settings', icon: <Cog6ToothIcon className="w-5 h-5" /> },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => {
-                setActiveNav(item.id as any);
-                window.location.hash = item.id;
-              }}
-              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition ${activeNav === item.id ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
-            >
-              {item.icon}
-              <span className="text-[10px] font-bold mt-1 uppercase tracking-tight">{item.label}</span>
-            </button>
-          ))}
+        {/* BARRA DE NAVEGAÇÃO INFERIOR TRANSPARENTE E FUNCIONAL PARA MOBILE */}
+        <nav aria-label="Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#02050b]/80 backdrop-blur-xl border-t border-slate-800/40 px-4 pt-2.5 pb-6 flex items-center justify-around z-40 shadow-2xl">
+          {navItems.map((item) => {
+            const isActive = pathname === item.path;
+            return (
+              <button
+                key={item.id}
+                onClick={() => router.push(item.path)}
+                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition ${isActive ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                {item.icon}
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-tight">{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
       </main>
     </div>
