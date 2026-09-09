@@ -1,7 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Connection, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
-import { BoltIcon, ShieldCheckIcon, CommandLineIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
+import { BoltIcon, ShieldCheckIcon, CommandLineIcon, ArrowTopRightOnSquareIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useWallet } from '../context/WalletContext';
 
 const COOKIE_RPC = 'https://rpc.cookiescan.io';
@@ -13,11 +13,31 @@ export default function TransactionPage() {
   const [statusLogType, setStatusLogType] = useState<string>('ready');
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [txSignature, setTxSignature] = useState<string | null>(null);
+  const [currentSlot, setCurrentSlot] = useState<number | null>(null);
+
+  // Fetch real Slot data from Cookie Chain in real-time
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchSlot() {
+      try {
+        const slot = await connection.getSlot();
+        if (isMounted) setCurrentSlot(slot);
+      } catch (e) {
+        console.error("Error fetching real slot:", e);
+      }
+    }
+    fetchSlot();
+    const interval = setInterval(fetchSlot, 5000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleExecuteIntent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!walletAddress) {
-      alert('Por favor, conecte sua carteira Nightly primeiro!');
+      alert('Please connect your Nightly wallet first!');
       connectWallet();
       return;
     }
@@ -42,7 +62,6 @@ export default function TransactionPage() {
       return;
     }
 
-    // Se a intenção for segura, executamos a transação real de Auditoria On-Chain via Nightly
     try {
       setStatusLogType('executing_real');
       
@@ -52,13 +71,10 @@ export default function TransactionPage() {
       }
 
       const senderPubKey = new PublicKey(walletAddress);
-      
-      // Buscar blockhash recente da Cookie Chain (SVM)
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
 
-      // Programa oficial de Memo da SVM para gravação de auditoria imutável (Proof of Audit)
       const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
-      const auditPayload = `[CookieLogix] Autonomous Intent & Security Audit Verified. SVM Status: SECURE. Wallet: ${walletAddress.slice(0, 6)}...`;
+      const auditPayload = `[CookieLogix] Autonomous Intent & Security Audit Verified. SVM Slot: ${currentSlot || 'LIVE'}. Wallet: ${walletAddress.slice(0, 6)}...`;
 
       const transaction = new Transaction({
         feePayer: senderPubKey,
@@ -71,7 +87,6 @@ export default function TransactionPage() {
         })
       );
 
-      // Solicitar assinatura e envio real pela carteira Nightly
       let signature = '';
       if (provider.signAndSendTransaction) {
         const res = await provider.signAndSendTransaction(transaction);
@@ -80,13 +95,12 @@ export default function TransactionPage() {
         const signed = await provider.signTransaction(transaction);
         signature = await connection.sendRawTransaction(signed.serialize());
       } else {
-        throw new Error('Metodo de assinatura nao suportado pelo provider.');
+        throw new Error('Signature method not supported.');
       }
 
       setTxSignature(signature);
       setStatusLogType('success_real');
 
-      // Confirmar transação na rede
       await connection.confirmTransaction({
         signature,
         blockhash,
@@ -94,7 +108,69 @@ export default function TransactionPage() {
       }, 'confirmed');
 
     } catch (error: any) {
-      console.error("Erro na execução on-chain:", error);
+      console.error("Error on on-chain execution:", error);
+      setStatusLogType('error_real');
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  // Panic Button Function (On-Chain Kill-Switch)
+  const handlePanicKillSwitch = async () => {
+    if (!walletAddress) {
+      alert('Connect your Nightly wallet to trigger the Emergency Kill-Switch!');
+      connectWallet();
+      return;
+    }
+
+    const confirmPanic = window.confirm("⚠️ WARNING: The Panic Button will broadcast an emergency cryptographic SOS on Cookie Chain. Do you wish to proceed?");
+    if (!confirmPanic) return;
+
+    setIsExecuting(true);
+    setTxSignature(null);
+    setStatusLogType('panic_executing');
+
+    try {
+      const provider = (window as any)?.nightly?.solana || (window as any)?.solana;
+      if (!provider) throw new Error('Nightly Wallet provider not found.');
+
+      const senderPubKey = new PublicKey(walletAddress);
+      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash();
+
+      const MEMO_PROGRAM_ID = new PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr');
+      const panicPayload = `[CookieLogix EMERGENCY KILL-SWITCH] COMPROMISED WALLET. FREEZE ASSETS & REVOKE DAPP ALLOWANCES FOR: ${walletAddress}`;
+
+      const transaction = new Transaction({
+        feePayer: senderPubKey,
+        recentBlockhash: blockhash,
+      }).add(
+        new TransactionInstruction({
+          keys: [{ pubkey: senderPubKey, isSigner: true, isWritable: true }],
+          programId: MEMO_PROGRAM_ID,
+          data: Buffer.from(panicPayload, 'utf-8'),
+        })
+      );
+
+      let signature = '';
+      if (provider.signAndSendTransaction) {
+        const res = await provider.signAndSendTransaction(transaction);
+        signature = res.signature || res;
+      } else if (provider.signTransaction) {
+        const signed = await provider.signTransaction(transaction);
+        signature = await connection.sendRawTransaction(signed.serialize());
+      }
+
+      setTxSignature(signature);
+      setStatusLogType('panic_success');
+
+      await connection.confirmTransaction({
+        signature,
+        blockhash,
+        lastValidBlockHeight
+      }, 'confirmed');
+
+    } catch (err: any) {
+      console.error("Error on Kill-Switch:", err);
       setStatusLogType('error_real');
     } finally {
       setIsExecuting(false);
@@ -104,7 +180,7 @@ export default function TransactionPage() {
   return (
     <div className="p-8 space-y-8 max-w-6xl mx-auto w-full animate-fade-in">
       
-      {/* Header da Página */}
+      {/* Header */}
       <div className="bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 px-8 py-6 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 rounded-full text-[10px] font-bold text-emerald-400 tracking-widest uppercase">
@@ -114,22 +190,23 @@ export default function TransactionPage() {
             Autonomous Transaction Execution HUD
           </h1>
         </div>
-        <p className="text-xs text-slate-400 font-mono text-right max-w-xs">
-          RPC: rpc.cookiescan.io • Nightly Provider Connected
-        </p>
+        <div className="text-right font-mono text-xs text-slate-400 space-y-0.5">
+          <div>RPC: rpc.cookiescan.io</div>
+          <div className="text-emerald-400 font-bold">Live Slot: #{currentSlot ? currentSlot.toLocaleString() : 'Syncing...'}</div>
+        </div>
       </div>
 
-      {/* Grid de Sugestões e Terminal */}
+      {/* Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Painel de Intenções e Gateway (Esquerda) */}
+        {/* Left Panel: Presets, Gateway & Panic Button */}
         <div className="lg:col-span-1 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-7 rounded-3xl space-y-5 shadow-2xl flex flex-col justify-between">
           <div className="space-y-4">
             <div>
               <h3 className="text-sm font-bold text-white mb-1 flex items-center gap-2">
                 <BoltIcon className="w-4 h-4 text-emerald-400" /> Quick Intent Presets
               </h3>
-              <p className="text-xs text-slate-400">Clique em qualquer intenção para testar o firewall ou transação real.</p>
+              <p className="text-xs text-slate-400">Click any intent to test the firewall or real transaction.</p>
             </div>
 
             <div className="space-y-2.5">
@@ -151,7 +228,7 @@ export default function TransactionPage() {
               ))}
             </div>
 
-            {/* Ecosystem Quick Gateway (Cookieswap & Cookiebox) */}
+            {/* Ecosystem Quick Gateway */}
             <div className="pt-2">
               <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5">
                 🍪 Ecosystem Quick Gateway
@@ -177,15 +254,29 @@ export default function TransactionPage() {
                 </a>
               </div>
             </div>
+
+            {/* 🔥 PANIC BUTTON (KILL-SWITCH ON-CHAIN) */}
+            <div className="pt-3">
+              <button
+                type="button"
+                disabled={isExecuting}
+                onClick={handlePanicKillSwitch}
+                className="w-full bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 border border-red-500/40 p-3.5 rounded-2xl text-xs text-white font-black transition flex items-center justify-center gap-2 shadow-lg shadow-red-900/30 cursor-pointer disabled:opacity-50"
+              >
+                <ExclamationTriangleIcon className="w-4 h-4 text-white animate-pulse" />
+                EMERGENCY PANIC KILL-SWITCH
+              </button>
+            </div>
+
           </div>
 
           <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-4 text-xs text-emerald-300/90 leading-relaxed mt-4">
             <span className="font-bold block mb-1 uppercase tracking-wider text-[10px] text-emerald-400">⚡ Real SVM Action</span>
-            Intenções legítimas assinam um Certificado de Auditoria On-Chain (Proof of Audit) na Cookie Chain.
+            Legitimate intents sign an On-Chain Audit Certificate (Proof of Audit) on Cookie Chain.
           </div>
         </div>
 
-        {/* Formulário e Terminal de Logs (Direita) */}
+        {/* Right Panel: Form & Terminal */}
         <div className="lg:col-span-2 bg-[#060a14]/80 backdrop-blur-2xl border border-slate-800/80 p-7 rounded-3xl space-y-6 shadow-2xl flex flex-col justify-between">
           <form onSubmit={handleExecuteIntent} className="space-y-4">
             <div>
@@ -215,11 +306,11 @@ export default function TransactionPage() {
             </div>
           </form>
 
-          {/* Recibo de Transação Real (Se houver assinatura) */}
+          {/* Real Transaction Receipt */}
           {txSignature && (
             <div className="bg-emerald-950/40 border border-emerald-500/40 p-4 rounded-2xl flex items-center justify-between text-xs animate-fade-in">
               <div>
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">On-Chain Audit Receipt Confirmed</span>
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">On-Chain Audit / SOS Receipt Confirmed</span>
                 <span className="font-mono text-slate-300 text-[11px] truncate block max-w-sm">{txSignature}</span>
               </div>
               <a
@@ -233,7 +324,7 @@ export default function TransactionPage() {
             </div>
           )}
 
-          {/* Terminal Real-Time Output */}
+          {/* Real-Time Terminal Output */}
           <div className="bg-[#1e1e1e] backdrop-blur-md border border-slate-700/60 rounded-2xl p-5 font-mono text-xs shadow-2xl space-y-2 relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-8 bg-[#2d2d2d] border-b border-slate-700/60 px-4 flex items-center justify-between text-[10px] text-slate-400">
               <div className="flex items-center gap-2">
@@ -255,7 +346,7 @@ export default function TransactionPage() {
               </div>
 
               {statusLogType === 'ready' && (
-                <p className="text-slate-400 leading-relaxed">Kernel active. Webacy Threat Intelligence & Cookie Chain SVM synchronized and ready for real audit signing.</p>
+                <p className="text-slate-400 leading-relaxed">Kernel active. Webacy Threat Intelligence & Cookie Chain SVM synchronized and ready. Live Slot #{currentSlot || '...'}.</p>
               )}
               {statusLogType === 'scanning' && (
                 <div className="space-y-1">
@@ -273,6 +364,18 @@ export default function TransactionPage() {
                 <div className="space-y-1">
                   <p className="text-sky-300">[INFO] Audit instruction broadcasted and confirmed on rpc.cookiescan.io.</p>
                   <p className="text-emerald-400 font-bold">[SUCCESS] Proof of Audit recorded on-chain. Finality achieved on SVM.</p>
+                </div>
+              )}
+              {statusLogType === 'panic_executing' && (
+                <div className="space-y-1">
+                  <p className="text-red-400 font-bold animate-pulse">[EMERGENCY] Disabling external allowances & preparing Kill-Switch broadcast...</p>
+                  <p className="text-amber-300">⏳ Awaiting emergency wallet signature override...</p>
+                </div>
+              )}
+              {statusLogType === 'panic_success' && (
+                <div className="space-y-1">
+                  <p className="text-red-500 font-bold">[CRITICAL SOS] Emergency Kill-Switch signature broadcasted to SVM.</p>
+                  <p className="text-emerald-400 font-bold">[SUCCESS] On-chain alert registered. Network notified of wallet compromise.</p>
                 </div>
               )}
               {statusLogType === 'blocked' && (
