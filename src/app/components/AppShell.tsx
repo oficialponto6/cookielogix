@@ -81,17 +81,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
 
         {/* BARRA DE NAVEGAÇÃO INFERIOR TRANSPARENTE E FUNCIONAL PARA MOBILE */}
-        <nav aria-label="Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#02050b]/80 backdrop-blur-xl border-t border-slate-800/40 px-4 pt-2.5 pb-6 flex items-center justify-around z-40 shadow-2xl">
+        <nav aria-label="Mobile Navigation" className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#02050b]/90 backdrop-blur-xl border-t border-slate-800/40 px-2 py-2 flex items-center justify-around z-40 shadow-2xl">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <button
                 key={item.id}
                 onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition ${isActive ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition ${isActive ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {item.icon}
-                <span className="text-[10px] font-bold mt-1 uppercase tracking-tight">{item.label}</span>
+                <span className="text-[10px] font-bold mt-0.5 uppercase tracking-tight">{item.label}</span>
               </button>
             );
           })}
